@@ -61,5 +61,9 @@
     <string name="RecoveryNOk">, health is not recovered!</string>
     <string name="player_side">Player side:</string>
     <string name="player_name">Player name:</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="right_player">Right Player</string>
+    <string name="left_player">Left Player</string>
 
 </resources>

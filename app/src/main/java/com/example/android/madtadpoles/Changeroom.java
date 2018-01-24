@@ -11,22 +11,26 @@ import android.widget.TextView;
 public class Changeroom {
 
     // users info and corresponding views
+    private TextView playerSideView;
     private EditText nameView;
     private String mUserName;
     private int mUserId;
     private TextView leftRight;
 
     // skin Views
+        // for changeroom
     private ImageView changeroomActiveSkinView;
     private ImageView changeroomNonActiveSkinLeft;
     private ImageView changeroomNonActiveSkinRight;
+        // for main activity
+    private ImageView mainActivitySkinView;
 
     // skin info and storage
     private int centerSkinIndex;
     private int[] wardrobe;
 
     // Changeroom class constructor
-    public Changeroom(Player player) {
+    Changeroom(Player player) {
         // load info about changeroom user
         mUserId = player.getPlayerId();
         mUserName = player.getPlayerName();
@@ -79,6 +83,10 @@ public class Changeroom {
     // define private method used for populating Changeroom views
     public void populateChangeroom (){
 
+        // update user name if any provided
+        if (!nameView.getText().toString().equals("")) {
+            mUserName = nameView.getText().toString();
+        }
         // change name hint on EditText
         this.getNameView().setHint(this.getUserName());
 
@@ -103,19 +111,27 @@ public class Changeroom {
 
         // set left/right View to indicate on which side current player is playing
         if (mUserId == 0){
-            leftRight.setText("Left");
+            playerSideView.setText(R.string.left_player);
+            leftRight.setText(R.string.left);
         }else{
-            leftRight.setText("Right");
+            playerSideView.setText(R.string.right_player);
+            leftRight.setText(R.string.right);
         }
 
     }
 
 
     // set changeroom views methods
-    public void setLeftRightView (TextView left_right){
+    public void setPlayerSideView (TextView view){
+        playerSideView = view;
+    }
+    public void setMainActivitySkinView (ImageView view){
+        mainActivitySkinView = view;
+    }
+    void setLeftRightView(TextView left_right){
         leftRight = left_right;
     }
-    public void setNameView(EditText name_view){
+    void setNameView(EditText name_view){
         nameView = name_view;
     }
     public void setCenter(ImageView center){
@@ -129,6 +145,12 @@ public class Changeroom {
     }
 
     // get changeroom views methods
+    public TextView getPlayerSideView (){
+        return playerSideView;
+    }
+    public ImageView getMainActivitySkinView(){
+        return mainActivitySkinView;
+    }
     public TextView getLeftRightView (){
         return leftRight;
     }
@@ -141,7 +163,7 @@ public class Changeroom {
     public ImageView getRight(){
         return changeroomNonActiveSkinRight;
     }
-    public EditText getNameView() {
+    EditText getNameView() {
         return nameView;
     }
 

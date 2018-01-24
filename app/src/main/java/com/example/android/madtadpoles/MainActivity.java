@@ -92,14 +92,24 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
 
 
     // creating tadpoles
-    private Tadpole KL = new Tadpole(100, 4, 0);
-    private Tadpole KR = new Tadpole(100, 4, 1);
-    private Tadpole[] players = {KL, KR};
+    public Tadpole KL = new Tadpole(100, 4, 0);
+    public Tadpole KR = new Tadpole(100, 4, 1);
+    public Tadpole[] players = {KL, KR};
+
+    //creating changeroom users
+    public Player leftPlayer;
+    public Player rightPlayer;
+
+    //creating changerooms
+    private Changeroom leftChangeroom;
+    private Changeroom rightChangeroom;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tadpoles);
         vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+
 
         // Assign Views corresponding to tadpoles
         KL.setHealthPoints((TextView) findViewById(R.id.kijankaLewaHP));
@@ -154,10 +164,32 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             public void onClick(View view){
                 Intent openChangeroom = new Intent(MainActivity.this, TadpoleChangeroomActivity.class);
 
-                Player changeroomUser = new Player(activePlayer, players[activePlayer].getName().getText().toString());
+                // set player info
+                leftPlayer = new Player(KL.getId(), KL.getName().getText().toString());
+                rightPlayer = new Player(KR.getId(), KR.getName().getText().toString());
 
-                //change so it will add player that is currently active
-                openChangeroom.putExtra("UserInfo", changeroomUser);
+                //set changerooms info
+                leftChangeroom = new Changeroom(leftPlayer);
+                rightChangeroom = new Changeroom(rightPlayer);
+
+
+                Player activeChangeroomUser = null;
+                Player notActiveChangeroomUser = null;
+                if (activePlayer == 0) {
+                    activeChangeroomUser = leftPlayer;
+                    notActiveChangeroomUser = rightPlayer;
+                }else if (activePlayer == 1){
+                    activeChangeroomUser = rightPlayer;
+                    notActiveChangeroomUser = leftPlayer;
+                }
+
+
+                //TO DO
+                //
+                //
+                //Change startActivity to startActivity for result
+                openChangeroom.putExtra("ActiveUserInfo", activeChangeroomUser);
+                openChangeroom.putExtra("NotActiveUserInfo", notActiveChangeroomUser);
                 startActivity(openChangeroom);
 
             }

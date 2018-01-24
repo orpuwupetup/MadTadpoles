@@ -26,6 +26,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
 
+
+
+
         <android.support.constraint.Guideline
             android:id="@+id/vertical_guidline"
             android:layout_width="wrap_content"
@@ -44,9 +47,17 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:layout_width="135dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/shadow"
+            app:layout_constraintEnd_toEndOf="@id/left_tad"
+            app:layout_constraintTop_toBottomOf="@id/left_tad"
+            app:layout_constraintStart_toStartOf="@id/left_tad"/>
+        <ImageView
             android:id="@+id/left_tad"
             android:layout_width="wrap_content"
-            android:layout_height="100dp"
+            android:layout_height="90dp"
             android:src="@drawable/left_tadpole_1_non_active"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/vertical_guidline"
@@ -55,9 +66,17 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:layout_width="135dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/shadow"
+            app:layout_constraintEnd_toEndOf="@id/right_tad"
+            app:layout_constraintTop_toBottomOf="@id/right_tad"
+            app:layout_constraintStart_toStartOf="@id/right_tad"/>
+        <ImageView
             android:id="@+id/right_tad"
             android:layout_width="wrap_content"
-            android:layout_height="100dp"
+            android:layout_height="90dp"
             android:src="@drawable/right_tadpole_2_non_active"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -65,6 +84,15 @@
             app:layout_constraintStart_toStartOf="@id/vertical_guidline"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/shadow_green"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintEnd_toEndOf="@id/center_tad"
+            app:layout_constraintTop_toBottomOf="@id/center_tad"
+            app:layout_constraintStart_toStartOf="@id/center_tad"/>
         <ImageView
             android:id="@+id/center_tad"
             android:layout_width="wrap_content"
@@ -77,6 +105,43 @@
             app:layout_constraintVertical_bias="0.7" />
 
 
+        <TextView
+            android:id="@+id/player_side"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:textAlignment="center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            tools:text="@string/player_side"
+            android:background="@color/dark_green"
+            app:layout_constraintStart_toEndOf="@id/previous_user"
+            app:layout_constraintEnd_toStartOf="@id/next_user"/>
+
+
+        <ImageButton
+            android:id="@+id/previous_user"
+            android:src="@drawable/ic_previous_skin"
+            android:layout_width="33dp"
+            android:background="@color/dark_green"
+            android:layout_height="33dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ImageButton
+            android:id="@+id/next_user"
+            android:src="@drawable/ic_next_skin"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:background="@color/dark_green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="#3e4e18"
+            app:layout_constraintTop_toBottomOf="@id/player_side"
+            app:layout_constraintBottom_toBottomOf="@id/player_side"/>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
@@ -189,6 +254,7 @@
             android:background="#00ffffff"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_tick"
+            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ix"
             app:layout_constraintStart_toStartOf="parent" />
@@ -199,6 +265,7 @@
             android:layout_height="55dp"
             android:background="#00ffffff"
             android:scaleType="centerCrop"
+            android:layout_marginBottom="16dp"
             android:src="@drawable/ic_ix"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

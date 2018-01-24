@@ -11,13 +11,15 @@ import android.widget.TextView;
 
 public class TadpoleChangeroomActivity extends AppCompatActivity {
 
-    public Player currentUser;
+    public Player activeUser;
+    public Player notActiveUser;
     public Changeroom currentChangeroom;
     int centerSkinIndex;
     public ImageView left;
     public ImageView right;
     public EditText changeUserNameField;
     public Intent userInfo;
+    public int activeChangeroomUser;
 
 
     @Override
@@ -25,15 +27,55 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tadpole_changeroom);
 
-        // get intent with Player object containing data about current player and save
-        //this data in another Player object
+        // get intent with Player objects containing data about current and resting players and save
+        //this data in another Player objects
         userInfo = getIntent();
-        currentUser = (Player)userInfo.getSerializableExtra("UserInfo");
+        activeUser = (Player)userInfo.getSerializableExtra("ActiveUserInfo");
+        notActiveUser = (Player)userInfo.getSerializableExtra("NotActiveUserInfo");
+
+        // set activePlayer variable as id of currently active player
+        activeChangeroomUser = activeUser.getPlayerId();
 
         // instantiate new Changeroom
-        currentChangeroom = new Changeroom(currentUser);
+        currentChangeroom = new Changeroom(activeUser);
+
+        ImageButton nextChangeroomUser = (ImageButton) findViewById(R.id.next_user);
+        nextChangeroomUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateChangeroom();
+            }
+        });
+
+        ImageButton previousChangeroomUser = (ImageButton) findViewById(R.id.previous_user);
+        previousChangeroomUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateChangeroom();
+            }
+        });
+        /*  if (activeUser.getPlayerId() == 0){
+        if (activeChangeroomUser == 0){
+        activeChangeroomUser = 1;
+        currentChangeroom.updateChangeroomInfo(notActiveUser);
+        } else if (activeChangeroomUser == 1){
+        activeChangeroomUser = 0;
+        currentChangeroom.updateChangeroomInfo(ActiveUser)
+
+        }else if (activeUser.getPlayerId() == 1{
+
+        if (activeChangeroomUser == 0){
+        activeChangeroomUser = 1;
+        currentChangeroom.updateChangeroomInfo(ActiveUser);
+        } else if (activeChangeroomUser == 1){
+        activeChangeroomUser = 0;
+        currentChangeroom.updateChangeroomInfo(notActiveUser)
+        }
+         */
 
         // set changeroom Views
+        // set playerSideView
+        currentChangeroom.setPlayerSideView((TextView) findViewById(R.id.player_side));
         // center
         currentChangeroom.setCenter((ImageView) findViewById(R.id.center_tad));
         // left
@@ -48,8 +90,11 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         // set all Views accordingly to info data about user
         currentChangeroom.populateChangeroom();
 
-        ImageButton next = (ImageButton) findViewById(R.id.next_skin);
-        next.setOnClickListener(new View.OnClickListener() {
+
+        // set on click listeners on buttons changing skin and give them functionality
+
+        ImageButton nextSkin = (ImageButton) findViewById(R.id.next_skin);
+        nextSkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (currentChangeroom.getWhichSkin() + 2 > currentChangeroom.getWardrobe().length - 1) {
@@ -60,8 +105,8 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
                 currentChangeroom.populateChangeroom();
             }
         });
-        ImageButton previous = (ImageButton) findViewById(R.id.previous_skin);
-        previous.setOnClickListener(new View.OnClickListener() {
+        ImageButton previousSkin = (ImageButton) findViewById(R.id.previous_skin);
+        previousSkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (currentChangeroom.getWhichSkin() - 2 < 0) {
@@ -72,12 +117,27 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
                 currentChangeroom.populateChangeroom();
             }
         });
+    }
+    public void updateChangeroom(){
+        if (activeUser.getPlayerId() == 0) {
+            if (activeChangeroomUser == 0) {
+                activeChangeroomUser = 1;
+                currentChangeroom.updateChangeroomInfo(notActiveUser);
+            } else if (activeChangeroomUser == 1) {
+                activeChangeroomUser = 0;
+                currentChangeroom.updateChangeroomInfo(activeUser);
 
+            } else if (activeUser.getPlayerId() == 1) {
 
-
-
-
-
-
+                if (activeChangeroomUser == 0) {
+                    activeChangeroomUser = 1;
+                    currentChangeroom.updateChangeroomInfo(activeUser);
+                } else if (activeChangeroomUser == 1) {
+                    activeChangeroomUser = 0;
+                    currentChangeroom.updateChangeroomInfo(notActiveUser);
+                }
+            }
+        }
+        currentChangeroom.populateChangeroom();
     }
 }
