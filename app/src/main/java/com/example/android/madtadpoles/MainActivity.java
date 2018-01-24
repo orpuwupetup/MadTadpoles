@@ -45,9 +45,6 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     private boolean isBackBtnPressed = false;
     private int attackValue = 0;
     public int activePlayer=1;
-//    public Changeroom leftChangeroom = new Changeroom(0, "", 1);
-//    public Changeroom rightChangeroom = new Changeroom(1, "", 1);
-//    public Changeroom[] changerooms = {leftChangeroom, rightChangeroom};
     private CountDownTimer countDownTimer; // Ola's new code
     private MediaPlayer attackSound;
     Vibrator vibe;
