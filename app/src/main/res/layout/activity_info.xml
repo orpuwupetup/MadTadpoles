@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/authors"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
-        app:srcCompat="@drawable/tadpole"
+        app:srcCompat="@drawable/left_tadpole_1"
         android:contentDescription="@null" />
 
     <ImageView
@@ -37,7 +37,7 @@
         android:layout_marginTop="@dimen/default_margin"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/top_background"
-        app:srcCompat="@drawable/tadpole_2"
+        app:srcCompat="@drawable/right_tadpole_2"
         android:contentDescription="@null" />
 
     <android.support.constraint.Guideline

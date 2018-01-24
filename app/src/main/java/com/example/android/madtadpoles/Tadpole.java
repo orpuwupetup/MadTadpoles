@@ -5,6 +5,7 @@ package com.example.android.madtadpoles;
 
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -15,8 +16,9 @@ import android.widget.TextView;
  */
 
 class Tadpole {
-    //Tagpole views
+    //Tadpole views
    private ImageButton attackButton;
+   private ImageView skinView;
    private Button startCount;
    private TextView name;
    private TextView AttackPoints;
@@ -53,6 +55,13 @@ class Tadpole {
         return health;
     }
 
+    void setSkinView (ImageView view_id){
+        skinView = view_id;
+    }
+
+    ImageView getSkinView (){
+        return skinView;
+    }
 
     int getAttackSound() {
         return attackSound;

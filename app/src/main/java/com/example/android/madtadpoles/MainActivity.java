@@ -1,3 +1,9 @@
+/*
+Tadpoles variable names changed from KM ("Kijanka miecz") and KT ("Kijanka topór") to KL
+("Kijanka Left") and KR ("Kijanka Rigth") respectively
+*/
+
+
 package com.example.android.madtadpoles;
 
 import android.animation.ObjectAnimator;
@@ -9,6 +15,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.CountDownTimer;
@@ -29,13 +36,18 @@ import android.content.DialogInterface;
 import android.widget.Toast;
 import android.os.Handler; // Ola's new code
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity implements Dialog.DialogListener{
 
     private boolean isAttackHitted = false;
     private boolean isBackBtnPressed = false;
     private int attackValue = 0;
-    private int activePlayer=1;
+    public int activePlayer=1;
+//    public Changeroom leftChangeroom = new Changeroom(0, "", 1);
+//    public Changeroom rightChangeroom = new Changeroom(1, "", 1);
+//    public Changeroom[] changerooms = {leftChangeroom, rightChangeroom};
     private CountDownTimer countDownTimer; // Ola's new code
     private MediaPlayer attackSound;
     Vibrator vibe;
@@ -83,9 +95,9 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
 
 
     // creating tadpoles
-    private Tadpole KM = new Tadpole(100, 4, 0);
-    private Tadpole KT = new Tadpole(100, 4, 1);
-    private Tadpole[] players = {KM, KT};
+    private Tadpole KL = new Tadpole(100, 4, 0);
+    private Tadpole KR = new Tadpole(100, 4, 1);
+    private Tadpole[] players = {KL, KR};
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,25 +105,27 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
         vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         // Assign Views corresponding to tadpoles
-        KM.setHealthPoints((TextView) findViewById(R.id.kijankaMieczHP));
-        KM.setAttackButton((ImageButton) findViewById(R.id.KMBtnAttack));
-        KM.setStartCount((Button) findViewById(R.id.startCountKM));
-        KM.setName((TextView) findViewById(R.id.KMName));
-        KM.setLabelCounter((TextView) findViewById(R.id.labelCounterKM));
-        KM.setAttackPoints((TextView) findViewById(R.id.kijankaMieczPts));
-        KM.setProgressBar((ProgressBar) findViewById(R.id.progressA));
-        KM.setHealthPoints((TextView) findViewById(R.id.kijankaMieczHP));
-        KM.setAttackSound(R.raw.kinja_01);
+        KL.setHealthPoints((TextView) findViewById(R.id.kijankaLewaHP));
+        KL.setAttackButton((ImageButton) findViewById(R.id.KLBtnAttack));
+        KL.setStartCount((Button) findViewById(R.id.startCountKL));
+        KL.setName((TextView) findViewById(R.id.KLName));
+        KL.setLabelCounter((TextView) findViewById(R.id.labelCounterKL));
+        KL.setAttackPoints((TextView) findViewById(R.id.kijankaLewaPts));
+        KL.setProgressBar((ProgressBar) findViewById(R.id.progressA));
+        KL.setHealthPoints((TextView) findViewById(R.id.kijankaLewaHP));
+        KL.setAttackSound(R.raw.kinja_01);
+        KL.setSkinView((ImageView) findViewById(R.id.kijankaLewa));
 
-        KT.setHealthPoints((TextView) findViewById(R.id.kijankaTasakHP));
-        KT.setAttackButton((ImageButton) findViewById(R.id.KTBtnAttack));
-        KT.setStartCount((Button) findViewById(R.id.startCountKT));
-        KT.setName((TextView) findViewById(R.id.KTName));
-        KT.setLabelCounter((TextView) findViewById(R.id.labelCounterKT));
-        KT.setAttackPoints((TextView) findViewById(R.id.kijankaTasakPts));
-        KT.setProgressBar((ProgressBar) findViewById(R.id.progressB));
-        KT.setHealthPoints((TextView) findViewById(R.id.kijankaTasakHP));
-        KT.setAttackSound(R.raw.kinja_02);
+        KR.setHealthPoints((TextView) findViewById(R.id.kijankaPrawaHP));
+        KR.setSkinView((ImageView) findViewById(R.id.kijankaPrawa));
+        KR.setAttackButton((ImageButton) findViewById(R.id.KRBtnAttack));
+        KR.setStartCount((Button) findViewById(R.id.startCountKR));
+        KR.setName((TextView) findViewById(R.id.KRName));
+        KR.setLabelCounter((TextView) findViewById(R.id.labelCounterKR));
+        KR.setAttackPoints((TextView) findViewById(R.id.kijankaPrawaPts));
+        KR.setProgressBar((ProgressBar) findViewById(R.id.progressB));
+        KR.setHealthPoints((TextView) findViewById(R.id.kijankaPrawaHP));
+        KR.setAttackSound(R.raw.kinja_02);
 
         if(!mIsBound) {
             doBindService();
@@ -132,45 +146,61 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
         }else switchPlayers();
 
         updateLabels();
-        progressbar(KM);  // --> Ola's new code
-        progressbar(KT);  // --> Ola's new code
+        progressbar(KL);  // --> Ola's new code
+        progressbar(KR);  // --> Ola's new code
 
 
-       // KM Attack button ClickListener
+        // Changeroom on click listener
+        ImageButton changeroomIcon = (ImageButton) findViewById(R.id.changeroom);
+        changeroomIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                Intent openChangeroom = new Intent(MainActivity.this, TadpoleChangeroomActivity.class);
+
+                Player changeroomUser = new Player(activePlayer, players[activePlayer].getName().getText().toString());
+
+                //change so it will add player that is currently active
+                openChangeroom.putExtra("UserInfo", changeroomUser);
+                startActivity(openChangeroom);
+
+            }
+        });
+
+       // KL Attack button ClickListener
         // On attack button click set isAttackHitted = true
-        KM.getAttackButton().setOnClickListener(new View.OnClickListener() {
+        KL.getAttackButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isAttackHitted = true;
             }
         });
 
-        // KT Attack button ClickListener
+        // KR Attack button ClickListener
         // On attack button click set isAttackHitted = true
-        KT.getAttackButton().setOnClickListener(new View.OnClickListener() {
+        KR.getAttackButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isAttackHitted = true;
             }
         });
 
-        //************************ Main counter for KM tadpole (left)
+        //************************ Main counter for KL tadpole (left)
         // On Start button enable Attack button and disable other players buttons
         // Create guns
-        KM.getStartCount().setOnClickListener(new View.OnClickListener(){
+        KL.getStartCount().setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View v){
-             activatePlayer(KM);
+             activatePlayer(KL);
             }
         });
 
-        //********************* Main counter for KT tadpole
+        //********************* Main counter for KR tadpole
         // On Start button enable Attack button and disable other players buttons
         // Create guns
-        KT.getStartCount().setOnClickListener(new View.OnClickListener(){
+        KR.getStartCount().setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View v){
-               activatePlayer(KT);
+               activatePlayer(KR);
             }
         });
 
@@ -317,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     }
 
     /*
-            * Finish KM countdown - Attack button pressed or countdown is finished
+            * Finish KL countdown - Attack button pressed or countdown is finished
             * give attacked tadpole as parameter
             */
 
@@ -374,12 +404,12 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
 
 
     /*
-    * Display KM and KT counters value
+    * Display KL and KR counters value
     */
     private void updateLabels(){
 
-        KM.getLabelCounter().setText(String.valueOf(KM.getMainCounter()));
-        KT.getLabelCounter().setText(String.valueOf(KT.getMainCounter()));
+        KL.getLabelCounter().setText(String.valueOf(KL.getMainCounter()));
+        KR.getLabelCounter().setText(String.valueOf(KR.getMainCounter()));
     }
     @SuppressLint("SetTextI18n")
     private void updateLabels(Tadpole tadpole, int counter){
@@ -476,15 +506,15 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
      */
     @Override
     public void applyTexts(String km, String kt) {
-        KM.getName().setText(km);
-        KT.getName().setText(kt);
+        KL.getName().setText(km);
+        KR.getName().setText(kt);
 
-       // KM.getName().getText();
+       // KL.getName().getText();
     }
 
 
     /**
-     * Enabling/disabling KM Attack button, change icon
+     * Enabling/disabling KL Attack button, change icon
      * @param disabled true false
      */
     private void disabledBtnAttack(Tadpole tadpole, boolean disabled){
@@ -501,7 +531,7 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     }
 
     /**
-     * Enabling/disabling KM Start button, change icon
+     * Enabling/disabling KL Start button, change icon
      * @param disabled true false
      */
     private void disabledCounterStart(Tadpole tadpole, boolean disabled){
@@ -621,60 +651,65 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     // ********************************** Cezary's code start
     // ******************************************************
 
+//    public void enterChangeroom(){
+//
+//    }
+
+
     /**
      * Display/hide player depending on turn
      * @param parameter 0-3
      */
     private void changePlayerColors(int parameter) {
-        // Left KM player's turn
+        // Left KL player's turn
         if (parameter == 0){
-            // Display left KM player
-            swordTadpoleVisibility(1);
-            // Hide right KT player
-            axeTadpoleVisibility(0);
+            // Display left KL player
+            leftTadpoleVisibility(1);
+            // Hide right KR player
+            rightTadpoleVisibility(0);
         }
-        // Right KT player's turn
+        // Right KR player's turn
         else if (parameter == 1){
-            // Hide left KM player
-            swordTadpoleVisibility(0);
-            // Display right KT player
-            axeTadpoleVisibility(1);
+            // Hide left KL player
+            leftTadpoleVisibility(0);
+            // Display right KR player
+            rightTadpoleVisibility(1);
         }
         // Display both players
         else if (parameter == 2){
-            // Display left KM player
-            swordTadpoleVisibility(1);
-            // Display right KT player
-            axeTadpoleVisibility(1);
+            // Display left KL player
+            leftTadpoleVisibility(1);
+            // Display right KR player
+            rightTadpoleVisibility(1);
         }
         // Hide both players
         else if (parameter == 3){
-            // Hide left KM player
-            swordTadpoleVisibility(0);
-            // Hide right KT player
-            axeTadpoleVisibility(0);
+            // Hide left KL player
+            leftTadpoleVisibility(0);
+            // Hide right KR player
+            rightTadpoleVisibility(0);
         }
     }
 
     /**
-     * Left KM player visibility
+     * Left KL player visibility
      * @param value hide = 0, display = 1
      */
-    private void swordTadpoleVisibility(int value) {
+    private void leftTadpoleVisibility(int value) {
 
         ProgressBar progressSword = findViewById(R.id.progressA);     // Progress bar
         View swordBack = findViewById(R.id.swordTadBack);                           // Icon background
-        ImageView swordTadPole = findViewById(R.id.kijankaMiecz);       // Player's icon
-        TextView turnDisplaySword = findViewById(R.id.KMRound);          // Turn display text
-        Button countDownStartSword = findViewById(R.id.startCountKM);      // Start button
-        TextView powerAttackSword = findViewById(R.id.labelCounterKM);   // Countdown value
-        ImageButton btnAttackSword = findViewById(R.id.KMBtnAttack);  // Attack button
-        TextView nameSword = findViewById(R.id.KMName);                  // Player's name
+        ImageView swordTadPole = findViewById(R.id.kijankaLewa);       // Player's icon
+        TextView turnDisplaySword = findViewById(R.id.KLRound);          // Turn display text
+        Button countDownStartSword = findViewById(R.id.startCountKL);      // Start button
+        TextView powerAttackSword = findViewById(R.id.labelCounterKL);   // Countdown value
+        ImageButton btnAttackSword = findViewById(R.id.KLBtnAttack);  // Attack button
+        TextView nameSword = findViewById(R.id.KLName);                  // Player's name
 
-        // Hide left KM player
+        // Hide left KL player
         if (value == 0) {
             // Change player's icon
-            swordTadPole.setImageResource(R.drawable.tadpole_non_active);
+            swordTadPole.setImageResource(R.drawable.left_tadpole_1_non_active);
 
             // Change turnDisplay TextView text, color and font color
             turnDisplaySword.setText(R.string.notYourTurn);
@@ -704,10 +739,10 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             // Change progress bar background color
             progressSword.setProgressDrawable(getResources().getDrawable(R.drawable.progress_horizontal_unactive));
         }
-        // Display left KM player
+        // Display left KL player
         else if (value == 1) {
             // Change player's icon
-            swordTadPole.setImageResource(R.drawable.tadpole);
+            swordTadPole.setImageResource(R.drawable.left_tadpole_1);
 
             // Change turnDisplay TextView text, color and font color
             turnDisplaySword.setText(R.string.YourTurn);
@@ -738,23 +773,23 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
         }
     }
     /**
-     * Right KT player visibility
+     * Right KR player visibility
      * @param value hide = 0, display = 1
      */
-    private void axeTadpoleVisibility(int value) {
+    private void rightTadpoleVisibility(int value) {
         ProgressBar progressAxe = findViewById(R.id.progressB);    // Progress bar
         View axeBack = findViewById(R.id.axeTadBack);                            // Icon background
-        ImageView axeTadPole = findViewById(R.id.kijankaTasak);      // Player's icon
-        TextView turnDisplayAxe = findViewById(R.id.KTRound);         // Turn display text
-        Button countDownStartAxe = findViewById(R.id.startCountKT);     // Start button
-        TextView powerAttackAxe = findViewById(R.id.labelCounterKT);  // Countdown value
-        ImageButton btnAttackAxe = findViewById(R.id.KTBtnAttack); // Attack button
-        TextView nameAxe = findViewById(R.id.KTName);                 // Player's name
+        ImageView axeTadPole = findViewById(R.id.kijankaPrawa);      // Player's icon
+        TextView turnDisplayAxe = findViewById(R.id.KRRound);         // Turn display text
+        Button countDownStartAxe = findViewById(R.id.startCountKR);     // Start button
+        TextView powerAttackAxe = findViewById(R.id.labelCounterKR);  // Countdown value
+        ImageButton btnAttackAxe = findViewById(R.id.KRBtnAttack); // Attack button
+        TextView nameAxe = findViewById(R.id.KRName);                 // Player's name
 
-        // Hide right KT player
+        // Hide right KR player
         if (value == 0) {
             // Change player's icon
-            axeTadPole.setImageResource(R.drawable.tadpole_2_non_active);
+            axeTadPole.setImageResource(R.drawable.right_tadpole_2_non_active);
 
             // Change turnDisplay TextView text, color and font color
             turnDisplayAxe.setText(R.string.notYourTurn);
@@ -785,10 +820,10 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             progressAxe.setProgressDrawable(getResources().getDrawable(R.drawable.progress_horizontal_unactive));
 
         }
-        // Display right KT player
+        // Display right KR player
         else if (value == 1) {
             // Change player's icon
-            axeTadPole.setImageResource(R.drawable.tadpole_2);
+            axeTadPole.setImageResource(R.drawable.right_tadpole_2);
 
             // Change turnDisplay TextView text, color and font color
             turnDisplayAxe.setText(R.string.YourTurn);
