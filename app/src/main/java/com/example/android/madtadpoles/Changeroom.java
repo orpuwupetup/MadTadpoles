@@ -221,16 +221,16 @@ public class Changeroom {
         //TextView, but it have to be this way, becouse of how I've implemented updateChangeroom
         // method in TadpoleChangeroomActivity
         if (mUserId == 0) {
-            if (wasRightNameUpdated == 0) {
-                rightUserName = player.getPlayerName();
+            if (wasLeftNameUpdated == 0) {
+                leftUserName = player.getPlayerName();
             }
             if (!nameView.getText().toString().equals("")) {
                 wasRightNameUpdated++;
                 rightUserName = nameView.getText().toString();
             }
         }else{
-            if (wasLeftNameUpdated == 0) {
-                leftUserName = player.getPlayerName();
+            if (wasRightNameUpdated == 0) {
+                rightUserName = player.getPlayerName();
             }
             if (!nameView.getText().toString().equals("")) {
                 wasLeftNameUpdated++;

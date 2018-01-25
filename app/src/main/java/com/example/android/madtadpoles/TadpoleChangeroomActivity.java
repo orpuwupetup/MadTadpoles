@@ -140,10 +140,14 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         currentChangeroom.populateChangeroom();
     }
     public void refreshChangeroom(){
-        if (activeChangeroomUser == activeUser.getPlayerId()){
+        if (activeChangeroomUser == 0 && activeUser.getPlayerId() ==0){
             currentChangeroom.updateChangeroomInfo(activeUser);
-        }else if (activeChangeroomUser == notActiveUser.getPlayerId()){
+        }else if (activeChangeroomUser == 0 && activeUser.getPlayerId() == 1){
             currentChangeroom.updateChangeroomInfo(notActiveUser);
+        }else if (activeChangeroomUser == 1 && activeUser.getPlayerId() == 0){
+            currentChangeroom.updateChangeroomInfo(notActiveUser);
+        }else if (activeChangeroomUser == 1 && activeUser.getPlayerId() == 1){
+            currentChangeroom.updateChangeroomInfo(activeUser);
         }
         currentChangeroom.populateChangeroom();
     }
