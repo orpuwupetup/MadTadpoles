@@ -120,19 +120,19 @@
 
         <ImageButton
             android:id="@+id/previous_user"
-            android:src="@drawable/ic_previous_skin"
-            android:layout_width="33dp"
+            android:src="@drawable/ic_previous_player"
+            android:layout_width="35dp"
             android:background="@color/dark_green"
-            android:layout_height="33dp"
+            android:layout_height="35dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
         <ImageButton
             android:id="@+id/next_user"
-            android:src="@drawable/ic_next_skin"
-            android:layout_width="33dp"
-            android:layout_height="33dp"
+            android:src="@drawable/ic_next_player"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@color/dark_green"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -174,6 +174,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1" />
+
+        <ImageButton
+            android:id="@+id/refresh_skins"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@drawable/ic_refresh_skin"
+            android:background="#00ffffff"
+            app:layout_constraintStart_toEndOf="@id/previous_skin"
+            app:layout_constraintEnd_toStartOf="@id/next_skin"
+            app:layout_constraintTop_toTopOf="@id/previous_skin"
+            app:layout_constraintBottom_toBottomOf="@id/next_skin"/>
 
         <ImageButton
             android:id="@+id/next_skin"

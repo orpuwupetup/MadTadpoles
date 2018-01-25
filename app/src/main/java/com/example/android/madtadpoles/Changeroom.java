@@ -11,11 +11,17 @@ import android.widget.TextView;
 public class Changeroom {
 
     // users info and corresponding views
+    private int wasLeftNameUpdated = 0;
+    private int wasRightNameUpdated = 0;
     private TextView playerSideView;
     private EditText nameView;
     private String mUserName;
     private int mUserId;
     private TextView leftRight;
+    private String leftUserName;
+    private String rightUserName;
+    private int leftPlayerSkinIndex;
+    private int rightPlayerSkinIndex;
 
     // skin Views
         // for changeroom
@@ -34,7 +40,11 @@ public class Changeroom {
         // load info about changeroom user
         mUserId = player.getPlayerId();
         mUserName = player.getPlayerName();
+        leftUserName = mUserName;
+        rightUserName = mUserName;
         centerSkinIndex = player.getWhichSkin();
+        leftPlayerSkinIndex = player.getWhichSkin();
+        rightPlayerSkinIndex = player.getWhichSkin();
 
         //create new wardrobe and put skins inside it
         setWardrobe(mUserId);
@@ -83,12 +93,13 @@ public class Changeroom {
     // define private method used for populating Changeroom views
     public void populateChangeroom (){
 
-        // update user name if any provided
-        if (!nameView.getText().toString().equals("")) {
-            mUserName = nameView.getText().toString();
+
+        // change name hint on EditText accordingly to which player changeroom is currently on screen
+        if (mUserId == 0) {
+            nameView.setHint(leftUserName);
+        } else if (mUserId == 1) {
+            nameView.setHint((rightUserName));
         }
-        // change name hint on EditText
-        this.getNameView().setHint(this.getUserName());
 
         //set center Tadpole Skin
         this.getCenter().setImageResource(this.getWardrobe()[centerSkinIndex]);
@@ -203,7 +214,29 @@ public class Changeroom {
     // method for updating changeroom when Player object is provided
     public void updateChangeroomInfo(Player player){
         mUserId = player.getPlayerId();
-        mUserName = player.getPlayerName();
+
+        // update user name if any provided, according to which player is actively using changeroom
+
+        //somewhat not intuitively if userID == 0 (left player) I am updating right player name
+        //TextView, but it have to be this way, becouse of how I've implemented updateChangeroom
+        // method in TadpoleChangeroomActivity
+        if (mUserId == 0) {
+            if (wasRightNameUpdated == 0) {
+                rightUserName = player.getPlayerName();
+            }
+            if (!nameView.getText().toString().equals("")) {
+                wasRightNameUpdated++;
+                rightUserName = nameView.getText().toString();
+            }
+        }else{
+            if (wasLeftNameUpdated == 0) {
+                leftUserName = player.getPlayerName();
+            }
+            if (!nameView.getText().toString().equals("")) {
+                wasLeftNameUpdated++;
+                leftUserName = nameView.getText().toString();
+            }
+        }
         centerSkinIndex = player.getWhichSkin();
 
         //create new wardrobe and put skins inside it

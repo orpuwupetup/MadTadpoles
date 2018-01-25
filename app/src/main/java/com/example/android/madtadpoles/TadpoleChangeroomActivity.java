@@ -39,11 +39,15 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         // instantiate new Changeroom
         currentChangeroom = new Changeroom(activeUser);
 
+
+        // set on click listeners used for changing changeroom users between active and
+        //non active player
         ImageButton nextChangeroomUser = (ImageButton) findViewById(R.id.next_user);
         nextChangeroomUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 updateChangeroom();
+
             }
         });
 
@@ -54,24 +58,15 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
                 updateChangeroom();
             }
         });
-        /*  if (activeUser.getPlayerId() == 0){
-        if (activeChangeroomUser == 0){
-        activeChangeroomUser = 1;
-        currentChangeroom.updateChangeroomInfo(notActiveUser);
-        } else if (activeChangeroomUser == 1){
-        activeChangeroomUser = 0;
-        currentChangeroom.updateChangeroomInfo(ActiveUser)
 
-        }else if (activeUser.getPlayerId() == 1{
-
-        if (activeChangeroomUser == 0){
-        activeChangeroomUser = 1;
-        currentChangeroom.updateChangeroomInfo(ActiveUser);
-        } else if (activeChangeroomUser == 1){
-        activeChangeroomUser = 0;
-        currentChangeroom.updateChangeroomInfo(notActiveUser)
-        }
-         */
+        // set on click listener on changeroom refresh button
+        ImageButton changeroomRefresh = (ImageButton) findViewById(R.id.refresh_skins);
+        changeroomRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                refreshChangeroom();
+            }
+        });
 
         // set changeroom Views
         // set playerSideView
@@ -121,22 +116,34 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
     public void updateChangeroom(){
         if (activeUser.getPlayerId() == 0) {
             if (activeChangeroomUser == 0) {
-                activeChangeroomUser = 1;
+
                 currentChangeroom.updateChangeroomInfo(notActiveUser);
+                activeChangeroomUser = 1;
             } else if (activeChangeroomUser == 1) {
-                activeChangeroomUser = 0;
+
                 currentChangeroom.updateChangeroomInfo(activeUser);
+                activeChangeroomUser = 0;
 
             } else if (activeUser.getPlayerId() == 1) {
 
                 if (activeChangeroomUser == 0) {
-                    activeChangeroomUser = 1;
                     currentChangeroom.updateChangeroomInfo(activeUser);
+                    activeChangeroomUser = 1;
                 } else if (activeChangeroomUser == 1) {
-                    activeChangeroomUser = 0;
+
                     currentChangeroom.updateChangeroomInfo(notActiveUser);
+                    activeChangeroomUser = 0;
                 }
             }
+        }
+        currentChangeroom.getNameView().setText("");
+        currentChangeroom.populateChangeroom();
+    }
+    public void refreshChangeroom(){
+        if (activeChangeroomUser == activeUser.getPlayerId()){
+            currentChangeroom.updateChangeroomInfo(activeUser);
+        }else if (activeChangeroomUser == notActiveUser.getPlayerId()){
+            currentChangeroom.updateChangeroomInfo(notActiveUser);
         }
         currentChangeroom.populateChangeroom();
     }
