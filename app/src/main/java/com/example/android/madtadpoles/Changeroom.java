@@ -12,6 +12,8 @@ import android.widget.TextView;
 public class Changeroom {
 
     // users info and corresponding views
+    private int wasLeftPlayerSkinUpdated =0 ;
+    private int wasRightPlayerSkinUpdated = 0;
     private int wasLeftNameUpdated = 0;
     private int wasRightNameUpdated = 0;
     private TextView playerSideView;
@@ -92,35 +94,17 @@ public class Changeroom {
     }
 
     // define private method used for populating Changeroom views
-    public void populateChangeroom (){
+    public void populateChangeroom () {
 
 
         // change name hint on EditText accordingly to which player changeroom is currently on screen
         if (mUserId == 0) {
+            setTadpoleSkins(leftPlayerSkinIndex);
             nameView.setHint(leftUserName);
         } else if (mUserId == 1) {
+            setTadpoleSkins(rightPlayerSkinIndex);
             nameView.setHint((rightUserName));
         }
-
-        //set center Tadpole Skin
-        this.getCenter().setImageResource(this.getWardrobe()[centerSkinIndex]);
-
-        // set right Tadpole skin
-        if (centerSkinIndex + 1 > this.getWardrobe().length - 1) {
-            this.getRight().setImageResource(this.getWardrobe()[1]);
-        }else if(centerSkinIndex + 3 > wardrobe.length - 1){
-            this.getRight().setImageResource(this.getWardrobe()[1]);
-        }else{
-            this.getRight().setImageResource(this.getWardrobe()[centerSkinIndex + 3]);
-        }
-
-        // set left Tadpole skin
-        if (centerSkinIndex - 1 < 0) {
-            this.getLeft().setImageResource(this.getWardrobe()[this.getWardrobe().length - 1]);
-        }else{
-            this.getLeft().setImageResource(this.getWardrobe()[centerSkinIndex - 1]);
-        }
-
         // set left/right View to indicate on which side current player is playing
         if (mUserId == 0){
             playerSideView.setText(R.string.left_player);
@@ -129,6 +113,28 @@ public class Changeroom {
             playerSideView.setText(R.string.right_player);
             leftRight.setText(R.string.right);
         }
+    }
+    public void setTadpoleSkins(int skinIndex){
+        //set center Tadpole Skin
+        this.getCenter().setImageResource(this.getWardrobe()[skinIndex]);
+
+        // set right Tadpole skin
+        if (skinIndex + 1 > this.getWardrobe().length - 1) {
+            this.getRight().setImageResource(this.getWardrobe()[1]);
+        }else if(skinIndex + 3 > wardrobe.length - 1){
+            this.getRight().setImageResource(this.getWardrobe()[1]);
+        }else{
+            this.getRight().setImageResource(this.getWardrobe()[skinIndex + 3]);
+        }
+
+        // set left Tadpole skin
+        if (skinIndex - 1 < 0) {
+            this.getLeft().setImageResource(this.getWardrobe()[this.getWardrobe().length - 1]);
+        }else{
+            this.getLeft().setImageResource(this.getWardrobe()[skinIndex - 1]);
+        }
+
+
 
     }
 
@@ -154,6 +160,12 @@ public class Changeroom {
     }
     public void setRight(ImageView right){
         changeroomNonActiveSkinRight = right;
+    }
+    public void setWasLeftPlayerSkinUpdated(){
+        wasLeftPlayerSkinUpdated++;
+    }
+    public void setWasRightPlayerSkinUpdated(){
+        wasRightPlayerSkinUpdated++;
     }
 
     // get changeroom views methods
@@ -200,9 +212,19 @@ public class Changeroom {
 
     // setter and getter method to get which skin is currently in usage
     public int getWhichSkin (){
+        if (mUserId == 0){
+            return leftPlayerSkinIndex;
+        }else if (mUserId == 1){
+            return rightPlayerSkinIndex;
+        }
         return centerSkinIndex;
     }
     public void setWhichSkin(int which_skin){
+        if (mUserId == 0){
+            leftPlayerSkinIndex = which_skin;
+        }else if (mUserId == 1){
+            rightPlayerSkinIndex = which_skin;
+        }
         centerSkinIndex = which_skin;
     }
 
@@ -225,18 +247,23 @@ public class Changeroom {
             if (!nameView.getText().toString().equals("")) {
                 wasRightNameUpdated++;
                 rightUserName = nameView.getText().toString();
-                Log.d("changeroom.java 235", "right name after getting text" + rightUserName);
             } else if (wasLeftNameUpdated == 0) {
                 leftUserName = player.getPlayerName();
+            }
+            if (wasLeftPlayerSkinUpdated == 0) {
+                leftPlayerSkinIndex = player.getWhichSkin();
+                wasLeftPlayerSkinUpdated++;
             }
         }else if (mUserId == 1){
             if (!nameView.getText().toString().equals("")) {
                 wasLeftNameUpdated++;
                 leftUserName = nameView.getText().toString();
-
             } else if (wasRightNameUpdated == 0) {
                 rightUserName = player.getPlayerName();
-                Log.d("changeroom.java 235 II", "right name before getting updated" + rightUserName);
+            }
+            if (wasRightPlayerSkinUpdated == 0) {
+                rightPlayerSkinIndex = player.getWhichSkin();
+                wasRightPlayerSkinUpdated++;
             }
         }
         centerSkinIndex = player.getWhichSkin();

@@ -92,6 +92,12 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         nextSkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // set if this is first change of skin for player
+                if (activeChangeroomUser == 0){
+                    currentChangeroom.setWasLeftPlayerSkinUpdated();
+                }else if (activeChangeroomUser == 1){
+                    currentChangeroom.setWasRightPlayerSkinUpdated();
+                }
                 if (currentChangeroom.getWhichSkin() + 2 > currentChangeroom.getWardrobe().length - 1) {
                     currentChangeroom.setWhichSkin(0);
                 } else {
@@ -104,6 +110,12 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         previousSkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // set if this is first change of skin for player
+                if (activeChangeroomUser == 0){
+                    currentChangeroom.setWasLeftPlayerSkinUpdated();
+                }else if (activeChangeroomUser == 1){
+                    currentChangeroom.setWasRightPlayerSkinUpdated();
+                }
                 if (currentChangeroom.getWhichSkin() - 2 < 0) {
                     currentChangeroom.setWhichSkin(currentChangeroom.getWardrobe().length - 2);
                 } else {
