@@ -124,7 +124,8 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
                 currentChangeroom.updateChangeroomInfo(activeUser);
                 activeChangeroomUser = 0;
 
-            } else if (activeUser.getPlayerId() == 1) {
+            }
+        }else if (activeUser.getPlayerId() == 1) {
 
                 if (activeChangeroomUser == 0) {
                     currentChangeroom.updateChangeroomInfo(activeUser);
@@ -135,7 +136,6 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
                     activeChangeroomUser = 0;
                 }
             }
-        }
         currentChangeroom.getNameView().setText("");
         currentChangeroom.populateChangeroom();
     }

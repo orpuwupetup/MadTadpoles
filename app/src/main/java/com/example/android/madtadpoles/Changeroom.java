@@ -1,5 +1,6 @@
 package com.example.android.madtadpoles;
 
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -221,20 +222,21 @@ public class Changeroom {
         //TextView, but it have to be this way, becouse of how I've implemented updateChangeroom
         // method in TadpoleChangeroomActivity
         if (mUserId == 0) {
-            if (wasLeftNameUpdated == 0) {
-                leftUserName = player.getPlayerName();
-            }
             if (!nameView.getText().toString().equals("")) {
                 wasRightNameUpdated++;
                 rightUserName = nameView.getText().toString();
+                Log.d("changeroom.java 235", "right name after getting text" + rightUserName);
+            } else if (wasLeftNameUpdated == 0) {
+                leftUserName = player.getPlayerName();
             }
-        }else{
-            if (wasRightNameUpdated == 0) {
-                rightUserName = player.getPlayerName();
-            }
+        }else if (mUserId == 1){
             if (!nameView.getText().toString().equals("")) {
                 wasLeftNameUpdated++;
                 leftUserName = nameView.getText().toString();
+
+            } else if (wasRightNameUpdated == 0) {
+                rightUserName = player.getPlayerName();
+                Log.d("changeroom.java 235 II", "right name before getting updated" + rightUserName);
             }
         }
         centerSkinIndex = player.getWhichSkin();
