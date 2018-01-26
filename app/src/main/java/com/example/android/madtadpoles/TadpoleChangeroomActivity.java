@@ -153,13 +153,13 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
     }
     public void refreshChangeroom(){
         if (activeChangeroomUser == 0 && activeUser.getPlayerId() ==0){
-            currentChangeroom.updateChangeroomInfo(activeUser);
+            currentChangeroom.refreshChangeroom(activeUser);
         }else if (activeChangeroomUser == 0 && activeUser.getPlayerId() == 1){
-            currentChangeroom.updateChangeroomInfo(notActiveUser);
+            currentChangeroom.refreshChangeroom(notActiveUser);
         }else if (activeChangeroomUser == 1 && activeUser.getPlayerId() == 0){
-            currentChangeroom.updateChangeroomInfo(notActiveUser);
+            currentChangeroom.refreshChangeroom(notActiveUser);
         }else if (activeChangeroomUser == 1 && activeUser.getPlayerId() == 1){
-            currentChangeroom.updateChangeroomInfo(activeUser);
+            currentChangeroom.refreshChangeroom(activeUser);
         }
         currentChangeroom.populateChangeroom();
     }

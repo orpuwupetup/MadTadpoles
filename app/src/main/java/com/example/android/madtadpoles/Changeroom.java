@@ -271,5 +271,15 @@ public class Changeroom {
         //create new wardrobe and put skins inside it
         setWardrobe(mUserId);
     }
+    public void refreshChangeroom(Player player){
+        mUserId = player.getPlayerId();
+        if (mUserId == 0){
+            leftPlayerSkinIndex = player.getWhichSkin();
+            leftUserName = player.getPlayerName();
+        }else if(mUserId == 1){
+            rightPlayerSkinIndex = player.getWhichSkin();
+            rightUserName = player.getPlayerName();
+        }
+    }
 
 }
