@@ -12,7 +12,7 @@ import android.widget.TextView;
 public class Changeroom {
 
     // users info and corresponding views
-    private int wasLeftPlayerSkinUpdated =0 ;
+    private int wasLeftPlayerSkinUpdated = 0;
     private int wasRightPlayerSkinUpdated = 0;
     private int wasLeftNameUpdated = 0;
     private int wasRightNameUpdated = 0;
@@ -229,9 +229,15 @@ public class Changeroom {
     }
 
     //method for creating Player object with info of current changeroom user
-    public Player getUser (){
-        Player userOfChangeroom = new Player(mUserId, mUserName);
-        userOfChangeroom.setWhichSkin(centerSkinIndex);
+    public Player getUser (int user_id){
+        Player userOfChangeroom = new Player(user_id, mUserName);;
+        if (user_id == 0) {
+            userOfChangeroom.setPlayerName(leftUserName);
+            userOfChangeroom.setWhichSkin(leftPlayerSkinIndex);
+        }else if(user_id == 1){
+            userOfChangeroom.setPlayerName(rightUserName);
+            userOfChangeroom.setWhichSkin(rightPlayerSkinIndex);
+        }
         return userOfChangeroom;
     }
     // method for updating changeroom when Player object is provided

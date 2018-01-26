@@ -3,6 +3,7 @@ package com.example.android.madtadpoles;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -27,6 +28,7 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tadpole_changeroom);
 
+
         // get intent with Player objects containing data about current and resting players and save
         //this data in another Player objects
         userInfo = getIntent();
@@ -38,6 +40,25 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
 
         // instantiate new Changeroom
         currentChangeroom = new Changeroom(activeUser);
+
+        // set changeroom Views
+        // set playerSideView
+        currentChangeroom.setPlayerSideView((TextView) findViewById(R.id.player_side));
+        // center
+        currentChangeroom.setCenter((ImageView) findViewById(R.id.center_tad));
+        // left
+        currentChangeroom.setLeft((ImageView) findViewById(R.id.left_tad));
+        // right
+        currentChangeroom.setRight((ImageView) findViewById(R.id.right_tad));
+        // name
+        currentChangeroom.setNameView((EditText) findViewById(R.id.change_user_name));
+        // left/right text View
+        currentChangeroom.setLeftRightView((TextView) findViewById(R.id.left_right));
+
+        // set all Views accordingly to info data about user
+        currentChangeroom.populateChangeroom();
+
+
 
 
         // set on click listeners used for changing changeroom users between active and
@@ -68,22 +89,28 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
             }
         });
 
-        // set changeroom Views
-        // set playerSideView
-        currentChangeroom.setPlayerSideView((TextView) findViewById(R.id.player_side));
-        // center
-        currentChangeroom.setCenter((ImageView) findViewById(R.id.center_tad));
-        // left
-        currentChangeroom.setLeft((ImageView) findViewById(R.id.left_tad));
-        // right
-        currentChangeroom.setRight((ImageView) findViewById(R.id.right_tad));
-        // name
-        currentChangeroom.setNameView((EditText) findViewById(R.id.change_user_name));
-        // left/right text View
-        currentChangeroom.setLeftRightView((TextView) findViewById(R.id.left_right));
 
-        // set all Views accordingly to info data about user
-        currentChangeroom.populateChangeroom();
+        // Set on click listeners for buttons aproving changes done to players or denying it
+        ImageButton tick = (ImageButton) findViewById(R.id.tick);
+        tick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateChangeroom();
+                if (activeUser.getPlayerId() == 0){
+                    //currentChangeroom.refreshChangeroom(activeUser);
+                    activeUser = currentChangeroom.getUser(0);
+                    notActiveUser = currentChangeroom.getUser(1);
+                    Log.d("tadchangeroomactivity", "active user skin "+activeUser.getWhichSkin()
+                    +"active user name"+activeUser.getPlayerName());
+                }else if (activeUser.getPlayerId() == 1){
+                    //currentChangeroom.refreshChangeroom(activeUser);
+                    activeUser = currentChangeroom.getUser(1);
+                    notActiveUser = currentChangeroom.getUser(0);
+                    Log.d("tadchangeroomactivity", "active user skin "+activeUser.getWhichSkin()
+                            +"active user name"+activeUser.getPlayerName());
+                }
+            }
+        });
 
 
         // set on click listeners on buttons changing skin and give them functionality
