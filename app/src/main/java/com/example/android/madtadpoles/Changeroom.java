@@ -22,8 +22,20 @@ public class Changeroom {
     private int mUserId;
     private TextView leftRight;
     private String leftUserName;
+    public String getLeftUserName (){
+        return leftUserName;
+    }
+    public String getRightUserName(){
+        return rightUserName;
+    }
     private String rightUserName;
     private int leftPlayerSkinIndex;
+    public int getLeftPlayerSkinIndex(){
+        return leftPlayerSkinIndex;
+    }
+    public int getRightPlayerSkinIndex(){
+        return rightPlayerSkinIndex;
+    }
     private int rightPlayerSkinIndex;
 
     // skin Views

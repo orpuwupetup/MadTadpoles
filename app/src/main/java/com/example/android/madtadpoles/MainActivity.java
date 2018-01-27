@@ -149,6 +149,24 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
         Bundle extras = getIntent().getExtras(); // --> Ola's new code
         if (extras != null){
             activePlayer = extras.getInt("winner");
+
+            if (activePlayer==0){
+                leftPlayer = (Player) extras.getSerializable("ActivePlayer");
+                rightPlayer = (Player) extras.getSerializable("NotActivePlayer");
+                KL.setSkinId(leftPlayer.getWhichSkin());
+                KL.getName().setText(leftPlayer.getPlayerName());
+
+                KR.setSkinId(rightPlayer.getWhichSkin());
+                KR.getName().setText(rightPlayer.getPlayerName());
+            } else if (activePlayer == 1){
+                leftPlayer = (Player) extras.getSerializable("NotActivePlayer");
+                rightPlayer = (Player) extras.getSerializable("ActivePlayer");
+                KL.setSkinId(leftPlayer.getWhichSkin());
+                KL.getName().setText(leftPlayer.getPlayerName());
+
+                KR.setSkinId(rightPlayer.getWhichSkin());
+                KR.getName().setText(rightPlayer.getPlayerName());
+            }
             switchPlayers();
         }else switchPlayers();
 
@@ -637,6 +655,13 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
                         Toast.makeText(MainActivity.this, R.string.newGameToast, Toast.LENGTH_LONG).show();
                         Intent startIntent = new Intent(MainActivity.this, MainActivity.class);  // --> Ola's new code
                         startIntent.putExtra("winner", tadpole.getId());
+                        if (activePlayer==0){
+                            startIntent.putExtra("ActivePlayer", leftPlayer);
+                            startIntent.putExtra("NotActivePlayer", rightPlayer);
+                        } else if (activePlayer == 1){
+                            startIntent.putExtra("ActivePlayer", rightPlayer);
+                            startIntent.putExtra("NotActivePlayer", leftPlayer);
+                        }
                         startActivity(startIntent);
                         finish();
                     }
