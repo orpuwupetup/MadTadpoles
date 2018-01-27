@@ -169,8 +169,9 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
 
                 // set player info
                 leftPlayer = new Player(KL.getId(), KL.getName().getText().toString());
+                leftPlayer.setWhichSkin(KL.getSkinId());
                 rightPlayer = new Player(KR.getId(), KR.getName().getText().toString());
-
+                rightPlayer.setWhichSkin(KR.getSkinId());
                 //set changerooms info
                 leftChangeroom = new Changeroom(leftPlayer);
                 rightChangeroom = new Changeroom(rightPlayer);
@@ -181,13 +182,9 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
                 if (activePlayer == 0) {
                     activeChangeroomUser = leftPlayer;
                     notActiveChangeroomUser = rightPlayer;
-                    KL.setSkinId(leftPlayer.getWhichSkin());
-                    KR.setSkinId(rightPlayer.getWhichSkin());
                 }else if (activePlayer == 1){
                     activeChangeroomUser = rightPlayer;
                     notActiveChangeroomUser = leftPlayer;
-                    KL.setSkinId(rightPlayer.getWhichSkin());
-                    KR.setSkinId(leftPlayer.getWhichSkin());
                 }
 
 
