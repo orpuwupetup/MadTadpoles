@@ -19,6 +19,8 @@ class Tadpole {
     //Tadpole views
    private ImageButton attackButton;
    private ImageView skinView;
+   private int skinId;
+   private int unactiveSkinId;
    private Button startCount;
    private TextView name;
    private TextView AttackPoints;
@@ -38,6 +40,16 @@ class Tadpole {
         this.mainCounter = mainCounter;
         this.id = id;
         this.health = hitPoints;
+        Player tad = new Player(this.id, "Bob");
+        this.skinId = tad.getWhichSkin();
+        this.unactiveSkinId = this.skinId + 1;
+    }
+    public void setSkinId(int skinIndex){
+        this.skinId = skinIndex;
+        this.unactiveSkinId = skinIndex + 1;
+    }
+    public int getSkinId(){
+        return this.skinId;
     }
 
      int attack(Tadpole tadpole, Gun gun) {

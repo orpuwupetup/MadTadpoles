@@ -1,5 +1,6 @@
 package com.example.android.madtadpoles;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -100,18 +101,28 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
                     //currentChangeroom.refreshChangeroom(activeUser);
                     activeUser = currentChangeroom.getUser(0);
                     notActiveUser = currentChangeroom.getUser(1);
-                    Log.d("tadchangeroomactivity", "active user skin "+activeUser.getWhichSkin()
-                    +"active user name"+activeUser.getPlayerName());
                 }else if (activeUser.getPlayerId() == 1){
                     //currentChangeroom.refreshChangeroom(activeUser);
                     activeUser = currentChangeroom.getUser(1);
                     notActiveUser = currentChangeroom.getUser(0);
-                    Log.d("tadchangeroomactivity", "active user skin "+activeUser.getWhichSkin()
-                            +"active user name"+activeUser.getPlayerName());
                 }
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("ActiveUserChanges", activeUser);
+                returnIntent.putExtra("NotActiveUserChanges", notActiveUser);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
             }
         });
 
+        ImageButton ix = (ImageButton) findViewById(R.id.ix);
+        ix.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent returnIntent = new Intent();
+                setResult(Activity.RESULT_CANCELED, returnIntent);
+                finish();
+            }
+        });
 
         // set on click listeners on buttons changing skin and give them functionality
 

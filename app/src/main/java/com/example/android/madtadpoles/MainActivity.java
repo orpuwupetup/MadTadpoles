@@ -97,12 +97,12 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     public Tadpole[] players = {KL, KR};
 
     //creating changeroom users
-    public Player leftPlayer;
-    public Player rightPlayer;
+    public Player leftPlayer = new Player(0, "bob");
+    public Player rightPlayer = new Player(1, "frank");
 
     //creating changerooms
-    private Changeroom leftChangeroom;
-    private Changeroom rightChangeroom;
+    private Changeroom leftChangeroom = new Changeroom(leftPlayer);
+    private Changeroom rightChangeroom = new Changeroom(rightPlayer);
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
         progressbar(KR);  // --> Ola's new code
 
 
+        // **************************************************
+        // *******************************Cezary's new code
+        // **************************************************
         // Changeroom on click listener
         ImageButton changeroomIcon = (ImageButton) findViewById(R.id.changeroom);
         changeroomIcon.setOnClickListener(new View.OnClickListener() {
@@ -178,9 +181,13 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
                 if (activePlayer == 0) {
                     activeChangeroomUser = leftPlayer;
                     notActiveChangeroomUser = rightPlayer;
+                    KL.setSkinId(leftPlayer.getWhichSkin());
+                    KR.setSkinId(rightPlayer.getWhichSkin());
                 }else if (activePlayer == 1){
                     activeChangeroomUser = rightPlayer;
                     notActiveChangeroomUser = leftPlayer;
+                    KL.setSkinId(rightPlayer.getWhichSkin());
+                    KR.setSkinId(leftPlayer.getWhichSkin());
                 }
 
 
@@ -190,10 +197,14 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
                 //Change startActivity to startActivity for result
                 openChangeroom.putExtra("ActiveUserInfo", activeChangeroomUser);
                 openChangeroom.putExtra("NotActiveUserInfo", notActiveChangeroomUser);
-                startActivity(openChangeroom);
+                startActivityForResult(openChangeroom, 9);
 
             }
         });
+
+        // ***************************
+        // **************Cezary's new code end
+        // ***************************
 
        // KL Attack button ClickListener
         // On attack button click set isAttackHitted = true
@@ -233,6 +244,13 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             }
         });
 
+        if (activePlayer==0){
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
+        }else{
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()+1]);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
+        }
     }
 
     private int nextPLayer(int player){
@@ -486,7 +504,29 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
                 recovered = data.getBooleanExtra("healthRecovered", false);
                 afterRecovery(players[activePlayer]);
             }
-        }
+
+            // Cezarys new code
+        } else if (requestCode == 9){
+            if (resultCode == Activity.RESULT_OK){
+                Player activeUserChanges = (Player) data.getSerializableExtra("ActiveUserChanges");
+                Player notActiveUserChanges = (Player) data.getSerializableExtra("NotActiveUserChanges");
+                if (activePlayer == 0) {
+                    leftPlayer = activeUserChanges;
+                    rightPlayer = notActiveUserChanges;
+                    KL.setSkinId(activeUserChanges.getWhichSkin());
+                    KR.setSkinId(notActiveUserChanges.getWhichSkin());
+                    KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
+                    KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
+                }else if (activePlayer == 1){
+                    rightPlayer = activeUserChanges;
+                    leftPlayer = notActiveUserChanges;
+                    KL.setSkinId(notActiveUserChanges.getWhichSkin());
+                    KR.setSkinId(activeUserChanges.getWhichSkin());
+                    KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId() + 1]);
+                    KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
+                }
+            }
+        } // Cezarys new code end
     }
 
     private void afterRecovery(final Tadpole tadpole ){
@@ -696,6 +736,8 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             leftTadpoleVisibility(1);
             // Hide right KR player
             rightTadpoleVisibility(0);
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
         }
         // Right KR player's turn
         else if (parameter == 1){
@@ -703,6 +745,8 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             leftTadpoleVisibility(0);
             // Display right KR player
             rightTadpoleVisibility(1);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId() + 1]);
         }
         // Display both players
         else if (parameter == 2){
@@ -710,6 +754,8 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             leftTadpoleVisibility(1);
             // Display right KR player
             rightTadpoleVisibility(1);
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
         }
         // Hide both players
         else if (parameter == 3){
@@ -717,6 +763,8 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             leftTadpoleVisibility(0);
             // Hide right KR player
             rightTadpoleVisibility(0);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()+1]);
         }
     }
 
