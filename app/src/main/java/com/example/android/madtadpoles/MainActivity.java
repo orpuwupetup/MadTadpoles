@@ -514,6 +514,8 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
                     KR.setSkinId(notActiveUserChanges.getWhichSkin());
                     KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
                     KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
+                    KL.getName().setText(leftPlayer.getPlayerName());
+                    KR.getName().setText(rightPlayer.getPlayerName());
                 }else if (activePlayer == 1){
                     rightPlayer = activeUserChanges;
                     leftPlayer = notActiveUserChanges;
@@ -521,6 +523,8 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
                     KR.setSkinId(activeUserChanges.getWhichSkin());
                     KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId() + 1]);
                     KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
+                    KL.getName().setText(leftPlayer.getPlayerName());
+                    KR.getName().setText(rightPlayer.getPlayerName());
                 }
             }
         } // Cezarys new code end
