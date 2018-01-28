@@ -1,5 +1,8 @@
 package com.example.android.madtadpoles;
 
+//***************Cezarys new code
+//start
+
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +19,6 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
     public Player activeUser;
     public Player notActiveUser;
     public Changeroom currentChangeroom;
-    int centerSkinIndex;
-    public ImageView left;
-    public ImageView right;
-    public EditText changeUserNameField;
     public Intent userInfo;
     public int activeChangeroomUser;
 
@@ -96,7 +95,11 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         tick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateChangeroom();
+
+                Log.d("tadpolechangeroom.java", "not active user name before update "+ notActiveUser.getPlayerName());
+                updateBeforeExit();
+
+                Log.d("tadpolechangeroom.java", "not active user name after update "+ notActiveUser.getPlayerName());
                 if (activeUser.getPlayerId() == 0){
                     //currentChangeroom.refreshChangeroom(activeUser);
                     activeUser = currentChangeroom.getUser(0);
@@ -201,4 +204,12 @@ public class TadpoleChangeroomActivity extends AppCompatActivity {
         }
         currentChangeroom.populateChangeroom();
     }
+    public void updateBeforeExit(){
+        currentChangeroom.refreshChangeroomBeforeExit(activeUser, notActiveUser, activeChangeroomUser);
+
+
+    }
 }
+
+//***************Cezarys new code
+// end

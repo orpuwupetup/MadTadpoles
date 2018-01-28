@@ -8,6 +8,8 @@ import android.widget.TextView;
 /**
  * Created by cezar on 24.01.2018.
  */
+//***************Cezarys new code
+    //start
 
 public class Changeroom {
 
@@ -22,20 +24,8 @@ public class Changeroom {
     private int mUserId;
     private TextView leftRight;
     private String leftUserName;
-    public String getLeftUserName (){
-        return leftUserName;
-    }
-    public String getRightUserName(){
-        return rightUserName;
-    }
     private String rightUserName;
     private int leftPlayerSkinIndex;
-    public int getLeftPlayerSkinIndex(){
-        return leftPlayerSkinIndex;
-    }
-    public int getRightPlayerSkinIndex(){
-        return rightPlayerSkinIndex;
-    }
     private int rightPlayerSkinIndex;
 
     // skin Views
@@ -43,8 +33,6 @@ public class Changeroom {
     private ImageView changeroomActiveSkinView;
     private ImageView changeroomNonActiveSkinLeft;
     private ImageView changeroomNonActiveSkinRight;
-        // for main activity
-    private ImageView mainActivitySkinView;
 
     // skin info and storage
     private int centerSkinIndex;
@@ -55,8 +43,11 @@ public class Changeroom {
         // load info about changeroom user
         mUserId = player.getPlayerId();
         mUserName = player.getPlayerName();
-        leftUserName = mUserName;
+        if (mUserId == 0) {
+            leftUserName = mUserName;
+        }else{
         rightUserName = mUserName;
+        }
         centerSkinIndex = player.getWhichSkin();
         leftPlayerSkinIndex = player.getWhichSkin();
         rightPlayerSkinIndex = player.getWhichSkin();
@@ -73,16 +64,20 @@ public class Changeroom {
     as an index are nonactive. Every skin consist of one active and one non active skin at indexes
     of respectively "any odd number" (for active skin) and "this number + 1" (for non active skin)
     */
-    public void setWardrobe (int user_id){
+
+    // Wardrobe Variable can be changed from array to ArrayList in the future, so that adding new
+    //skins will be easier
+    private void setWardrobe(int user_id){
 
         /*
         when new skin is added, programmer has to increase this number by 2 for each new skin
         pair (active, nonactive)
         */
-        wardrobe = new int[6];
+        //wardrobe = new int[6];
 
         // Skins for left tadpole
         if (user_id == 0){
+            wardrobe = new int[6];
             wardrobe[0] = R.drawable.left_tadpole_1;
             wardrobe[1] = R.drawable.left_tadpole_1_non_active;
             wardrobe[2] = R.drawable.left_tadpole_2;
@@ -92,6 +87,7 @@ public class Changeroom {
 
         // Skins for right tadpole
         } else if (user_id == 1) {
+            wardrobe = new int[6];
             wardrobe[0] = R.drawable.right_tadpole_1;
             wardrobe[1] = R.drawable.right_tadpole_1_non_active;
             wardrobe[2] = R.drawable.right_tadpole_2;
@@ -155,9 +151,6 @@ public class Changeroom {
     public void setPlayerSideView (TextView view){
         playerSideView = view;
     }
-    public void setMainActivitySkinView (ImageView view){
-        mainActivitySkinView = view;
-    }
     void setLeftRightView(TextView left_right){
         leftRight = left_right;
     }
@@ -181,15 +174,6 @@ public class Changeroom {
     }
 
     // get changeroom views methods
-    public TextView getPlayerSideView (){
-        return playerSideView;
-    }
-    public ImageView getMainActivitySkinView(){
-        return mainActivitySkinView;
-    }
-    public TextView getLeftRightView (){
-        return leftRight;
-    }
     public ImageView getCenter(){
         return changeroomActiveSkinView;
     }
@@ -256,7 +240,7 @@ public class Changeroom {
     public void updateChangeroomInfo(Player player){
         mUserId = player.getPlayerId();
 
-        // update user name if any provided, according to which player is actively using changeroom
+        // update user name if any provided, according to which player6 is actively using changeroom
 
         //somewhat not intuitively if userID == 0 (left player) I am updating right player name
         //TextView, but it have to be this way, becouse of how I've implemented updateChangeroom
@@ -265,6 +249,7 @@ public class Changeroom {
             if (!nameView.getText().toString().equals("")) {
                 wasRightNameUpdated++;
                 rightUserName = nameView.getText().toString();
+                leftUserName = player.getPlayerName();
             } else if (wasLeftNameUpdated == 0) {
                 leftUserName = player.getPlayerName();
             }
@@ -276,6 +261,7 @@ public class Changeroom {
             if (!nameView.getText().toString().equals("")) {
                 wasLeftNameUpdated++;
                 leftUserName = nameView.getText().toString();
+                rightUserName = player.getPlayerName();
             } else if (wasRightNameUpdated == 0) {
                 rightUserName = player.getPlayerName();
             }
@@ -299,5 +285,55 @@ public class Changeroom {
             rightUserName = player.getPlayerName();
         }
     }
+    public void refreshChangeroomBeforeExit(Player active_user, Player not_active_user, int active_changeroom_user){
+        if (active_user.getPlayerId() == 0){
+            if (wasRightPlayerSkinUpdated == 0){
+                rightPlayerSkinIndex = not_active_user.getWhichSkin();
+            }
+            if (wasLeftPlayerSkinUpdated == 0){
+                leftPlayerSkinIndex = active_user.getWhichSkin();
+            }
+            if (wasRightNameUpdated == 0){
+                rightUserName = not_active_user.getPlayerName();
+            }
+            if (!nameView.getText().toString().equals("")) {
+                if(active_changeroom_user == 0) {
+                    leftUserName = nameView.getText().toString();
+                }else{
+                    rightUserName = nameView.getText().toString();
+                }
+            }
+            if(active_changeroom_user == 0) {
+                leftPlayerSkinIndex = this.getWhichSkin();
+            }else{
+                rightPlayerSkinIndex = this.getWhichSkin();
+            }
+        }else if(active_user.getPlayerId() == 1){
+            if(wasLeftPlayerSkinUpdated == 0){
+                leftPlayerSkinIndex = not_active_user.getWhichSkin();
+            }
+            if (wasLeftPlayerSkinUpdated == 0){
+                leftPlayerSkinIndex = not_active_user.getWhichSkin();
+            }
+            if (wasLeftNameUpdated == 0){
+                leftUserName = not_active_user.getPlayerName();
+            }
+            if (!nameView.getText().toString().equals("")) {
+                if(active_changeroom_user == 0) {
+                    leftUserName = nameView.getText().toString();
+                }else{
+                    rightUserName = nameView.getText().toString();
+                }
+            }
+            if(active_changeroom_user == 0) {
+                leftPlayerSkinIndex = this.getWhichSkin();
+            }else{
+                rightPlayerSkinIndex = this.getWhichSkin();
+            }
+
+        }
+    }
 
 }
+//***************Cezarys new code
+// end
