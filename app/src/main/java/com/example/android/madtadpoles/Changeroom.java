@@ -69,24 +69,31 @@ public class Changeroom {
     //skins will be easier
     private void setWardrobe(int user_id){
 
-        /*
-        when new skin is added, programmer has to increase this number by 2 for each new skin
-        pair (active, nonactive)
-        */
+
         //wardrobe = new int[6];
 
         // Skins for left tadpole
         if (user_id == 0){
-            wardrobe = new int[6];
+        /*
+        when new skin is added, programmer has to increase this number by 2 for each new skin
+        pair (active, nonactive)
+        */
+            wardrobe = new int[8];
             wardrobe[0] = R.drawable.left_tadpole_1;
             wardrobe[1] = R.drawable.left_tadpole_1_non_active;
             wardrobe[2] = R.drawable.left_tadpole_2;
             wardrobe[3] = R.drawable.left_tadpole_2_non_active;
             wardrobe[4] = R.drawable.left_tadpole_3;
             wardrobe[5] = R.drawable.left_tadpole_3_non_active;
+            wardrobe[6] = R.drawable.left_pirate_tadpole;
+            wardrobe[7] = R.drawable.left_pirate_tadpole_non_active;
 
         // Skins for right tadpole
-        } else if (user_id == 1) {
+        } else if (user_id == 1){
+        /*
+        when new skin is added, programmer has to increase this number by 2 for each new skin
+        pair (active, nonactive)
+        */
             wardrobe = new int[6];
             wardrobe[0] = R.drawable.right_tadpole_1;
             wardrobe[1] = R.drawable.right_tadpole_1_non_active;
