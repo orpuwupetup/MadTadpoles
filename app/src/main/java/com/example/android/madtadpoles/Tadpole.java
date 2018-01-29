@@ -5,23 +5,30 @@ package com.example.android.madtadpoles;
 
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
  * Created by Michał Jura on 11.12.2017.
+ *
+ * class definig tadpoles
  */
 
+
 class Tadpole {
-    //Tagpole views
+    //Tadpole views
    private ImageButton attackButton;
+   private ImageView skinView;
+   private int skinId;
+   private int unactiveSkinId;
    private Button startCount;
    private TextView name;
    private TextView AttackPoints;
    private ProgressBar progressBar;
    private TextView healthPoints;
    private TextView labelCounter;
-
+   private int attackSound;
     // Tadpole stats
     private int hitPoints;
     private int health;
@@ -34,6 +41,16 @@ class Tadpole {
         this.mainCounter = mainCounter;
         this.id = id;
         this.health = hitPoints;
+        Player tad = new Player(this.id, "Bob");
+        this.skinId = tad.getWhichSkin();
+        this.unactiveSkinId = this.skinId + 1;
+    }
+    public void setSkinId(int skinIndex){
+        this.skinId = skinIndex;
+        this.unactiveSkinId = skinIndex + 1;
+    }
+    public int getSkinId(){
+        return this.skinId;
     }
 
      int attack(Tadpole tadpole, Gun gun) {
@@ -51,11 +68,23 @@ class Tadpole {
         return health;
     }
 
+    void setSkinView (ImageView view_id){
+        skinView = view_id;
+    }
 
+    ImageView getSkinView (){
+        return skinView;
+    }
 
+    int getAttackSound() {
+        return attackSound;
+    }
 
+    void setAttackSound(int attackSound) {
+        this.attackSound = attackSound;
+    }
 
-     void setAttackButton(ImageButton attackButton) {
+    void setAttackButton(ImageButton attackButton) {
         this.attackButton = attackButton;
     }
 

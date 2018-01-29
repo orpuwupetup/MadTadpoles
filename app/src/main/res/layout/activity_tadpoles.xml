@@ -57,7 +57,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:progress="100"
-        app:layout_constraintEnd_toEndOf="@+id/kijankaMiecz"
+        app:layout_constraintEnd_toEndOf="@+id/kijankaLewa"
         app:layout_constraintStart_toEndOf="@+id/infoButton"
         app:layout_constraintTop_toTopOf="@+id/guidelineGora" />
 
@@ -72,7 +72,7 @@
         android:layout_marginTop="16dp"
         android:progress="100"
         app:layout_constraintEnd_toStartOf="@+id/helpButton"
-        app:layout_constraintStart_toStartOf="@+id/kijankaTasak"
+        app:layout_constraintStart_toStartOf="@+id/kijankaPrawa"
         app:layout_constraintTop_toTopOf="@+id/guidelineGora" />
 
     <android.support.constraint.Guideline
@@ -83,33 +83,33 @@
         app:layout_constraintGuide_begin="16dp" />
 
     <ImageView
-        android:id="@+id/kijankaMiecz"
+        android:id="@+id/kijankaLewa"
         android:layout_width="0dp"
         android:layout_height="110dp"
         android:contentDescription="@null"
         app:layout_constraintBottom_toBottomOf="@+id/imageBackground"
-        app:layout_constraintEnd_toStartOf="@+id/kijankaTasak"
+        app:layout_constraintEnd_toStartOf="@+id/kijankaPrawa"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/guidelineLewa"
         app:layout_constraintStart_toStartOf="@+id/guidelineLewa"
         app:layout_constraintTop_toTopOf="@+id/imageBackground"
         app:layout_constraintVertical_bias="0.75"
-        app:srcCompat="@drawable/tadpole" />
+        app:srcCompat="@drawable/left_tadpole_1" />
 
     <ImageView
-        android:id="@+id/kijankaTasak"
+        android:id="@+id/kijankaPrawa"
         android:layout_width="0dp"
         android:layout_height="110dp"
         android:contentDescription="@null"
         app:layout_constraintBottom_toBottomOf="@+id/imageBackground"
         app:layout_constraintEnd_toStartOf="@+id/guidelinePrawa"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/kijankaMiecz"
+        app:layout_constraintStart_toEndOf="@+id/kijankaLewa"
         app:layout_constraintTop_toTopOf="@+id/imageBackground"
-        app:srcCompat="@drawable/tadpole_2" />
+        app:srcCompat="@drawable/right_tadpole_2" />
 
     <TextView
-        android:id="@+id/KMName"
+        android:id="@+id/KLName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -119,11 +119,11 @@
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageBackground"
-        app:layout_constraintEnd_toEndOf="@+id/kijankaMiecz"
-        app:layout_constraintStart_toStartOf="@+id/kijankaMiecz" />
+        app:layout_constraintEnd_toEndOf="@+id/kijankaLewa"
+        app:layout_constraintStart_toStartOf="@+id/kijankaLewa" />
 
     <TextView
-        android:id="@+id/KTName"
+        android:id="@+id/KRName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -133,8 +133,8 @@
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageBackground"
-        app:layout_constraintEnd_toEndOf="@+id/kijankaTasak"
-        app:layout_constraintStart_toStartOf="@+id/kijankaTasak" />
+        app:layout_constraintEnd_toEndOf="@+id/kijankaPrawa"
+        app:layout_constraintStart_toStartOf="@+id/kijankaPrawa" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guidelinePrawa"
@@ -145,21 +145,21 @@
         app:layout_constraintStart_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/KMRound"
+        android:id="@+id/KLRound"
         android:layout_width="0dp"
         android:layout_height="30dp"
         android:background="@color/main_green"
         android:gravity="center"
         android:textAlignment="center"
         android:text="@string/YourTurn"
-        app:layout_constraintEnd_toStartOf="@+id/KTRound"
+        app:layout_constraintEnd_toStartOf="@+id/KRRound"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageBackground" />
 
     <TextView
-        android:id="@+id/KTRound"
+        android:id="@+id/KRRound"
         android:layout_width="0dp"
         android:layout_height="30dp"
         android:background="@color/main_green"
@@ -168,11 +168,11 @@
         android:text="@string/YourTurn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/KMRound"
+        app:layout_constraintStart_toEndOf="@+id/KLRound"
         app:layout_constraintTop_toBottomOf="@+id/imageBackground" />
 
     <Button
-        android:id="@+id/startCountKM"
+        android:id="@+id/startCountKL"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
@@ -182,16 +182,16 @@
         android:text="@string/countdown_start"
         android:textSize="@dimen/countDownStart_textSize"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/labelCounterKM"
-        app:layout_constraintEnd_toStartOf="@+id/startCountKT"
+        app:layout_constraintBottom_toTopOf="@id/labelCounterKL"
+        app:layout_constraintEnd_toStartOf="@id/startCountKR"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@+id/guidelineLewa"
         app:layout_constraintStart_toStartOf="@+id/guidelineLewa"
-        app:layout_constraintTop_toBottomOf="@+id/KMRound" />
+        app:layout_constraintTop_toBottomOf="@+id/KLRound" />
 
     <Button
-        android:id="@+id/startCountKT"
+        android:id="@+id/startCountKR"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
@@ -201,14 +201,14 @@
         android:text="@string/countdown_start"
         android:textSize="@dimen/countDownStart_textSize"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/labelCounterKT"
+        app:layout_constraintBottom_toTopOf="@+id/labelCounterKR"
         app:layout_constraintEnd_toStartOf="@+id/guidelinePrawa"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/startCountKM"
-        app:layout_constraintTop_toBottomOf="@+id/KTRound" />
+        app:layout_constraintStart_toEndOf="@+id/startCountKL"
+        app:layout_constraintTop_toBottomOf="@+id/KRRound" />
 
     <TextView
-        android:id="@+id/labelCounterKM"
+        android:id="@+id/labelCounterKL"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -218,16 +218,16 @@
         android:textAlignment="center"
         android:textSize="@dimen/countDownText_size"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/KMBtnAttack"
-        app:layout_constraintEnd_toStartOf="@+id/labelCounterKT"
+        app:layout_constraintBottom_toTopOf="@+id/KLBtnAttack"
+        app:layout_constraintEnd_toStartOf="@+id/labelCounterKR"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@+id/guidelineLewa"
         app:layout_constraintStart_toStartOf="@+id/guidelineLewa"
-        app:layout_constraintTop_toBottomOf="@+id/startCountKM" />
+        app:layout_constraintTop_toBottomOf="@+id/startCountKL" />
 
     <TextView
-        android:id="@+id/labelCounterKT"
+        android:id="@+id/labelCounterKR"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -238,14 +238,14 @@
         android:textAlignment="center"
         android:textSize="@dimen/countDownText_size"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/KTBtnAttack"
+        app:layout_constraintBottom_toTopOf="@+id/KRBtnAttack"
         app:layout_constraintEnd_toStartOf="@+id/guidelinePrawa"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/labelCounterKM"
-        app:layout_constraintTop_toBottomOf="@+id/startCountKT" />
+        app:layout_constraintStart_toEndOf="@+id/labelCounterKL"
+        app:layout_constraintTop_toBottomOf="@+id/startCountKR" />
 
     <ImageButton
-        android:id="@+id/KMBtnAttack"
+        android:id="@+id/KLBtnAttack"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -257,16 +257,16 @@
         android:padding="15dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/KTBtnAttack"
+        app:layout_constraintEnd_toStartOf="@+id/KRBtnAttack"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@+id/guidelineLewa"
         app:layout_constraintStart_toStartOf="@+id/guidelineLewa"
-        app:layout_constraintTop_toBottomOf="@+id/labelCounterKM"
+        app:layout_constraintTop_toBottomOf="@+id/labelCounterKL"
         app:srcCompat="@drawable/ic_miecz" />
 
     <ImageButton
-        android:id="@+id/KTBtnAttack"
+        android:id="@+id/KRBtnAttack"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -280,8 +280,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guidelinePrawa"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/KMBtnAttack"
-        app:layout_constraintTop_toBottomOf="@+id/labelCounterKT"
+        app:layout_constraintStart_toEndOf="@+id/KLBtnAttack"
+        app:layout_constraintTop_toBottomOf="@+id/labelCounterKR"
         app:srcCompat="@drawable/ic_miecz" />
 
     <!--<TextView-->
@@ -355,7 +355,7 @@
         android:contentDescription="@null" />
 
     <TextView
-        android:id="@+id/kijankaMieczHP"
+        android:id="@+id/kijankaLewaHP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -380,7 +380,7 @@
         android:contentDescription="@null" />
 
     <TextView
-        android:id="@+id/kijankaTasakHP"
+        android:id="@+id/kijankaPrawaHP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -393,7 +393,7 @@
 
     <!--Uwaga pole bez wartości początkowej jest niewidoczne na layoucie-->
     <TextView
-        android:id="@+id/kijankaMieczPts"
+        android:id="@+id/kijankaLewaPts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
@@ -404,15 +404,15 @@
         android:paddingTop="4dp"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/kijankaMiecz"
-        app:layout_constraintEnd_toEndOf="@+id/kijankaMiecz"
-        app:layout_constraintStart_toStartOf="@+id/kijankaMiecz"
-        app:layout_constraintTop_toTopOf="@+id/kijankaMiecz"
+        app:layout_constraintBottom_toBottomOf="@+id/kijankaLewa"
+        app:layout_constraintEnd_toEndOf="@+id/kijankaLewa"
+        app:layout_constraintStart_toStartOf="@+id/kijankaLewa"
+        app:layout_constraintTop_toTopOf="@+id/kijankaLewa"
         app:layout_constraintVertical_bias="0.83" />
 
     <!--Uwaga pole bez wartości początkowej jest niewidoczne na layoucie-->
     <TextView
-        android:id="@+id/kijankaTasakPts"
+        android:id="@+id/kijankaPrawaPts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0"
@@ -423,11 +423,22 @@
         android:paddingTop="4dp"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/kijankaTasak"
-        app:layout_constraintEnd_toEndOf="@+id/kijankaTasak"
+        app:layout_constraintBottom_toBottomOf="@+id/kijankaPrawa"
+        app:layout_constraintEnd_toEndOf="@+id/kijankaPrawa"
         app:layout_constraintHorizontal_bias="0.44"
-        app:layout_constraintStart_toStartOf="@+id/kijankaTasak"
-        app:layout_constraintTop_toTopOf="@+id/kijankaTasak"
+        app:layout_constraintStart_toStartOf="@+id/kijankaPrawa"
+        app:layout_constraintTop_toTopOf="@+id/kijankaPrawa"
         app:layout_constraintVertical_bias="0.55" />
+    <ImageButton
+        android:id="@+id/changeroom"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_changeroom"
+        android:background="#00ffffff"
+        app:layout_constraintBottom_toBottomOf="@id/KLName"
+        app:layout_constraintTop_toTopOf="@+id/KRName"
+        app:layout_constraintStart_toEndOf="@id/KLName"
+        app:layout_constraintEnd_toStartOf="@id/KRName"/>
 
 </android.support.constraint.ConstraintLayout>

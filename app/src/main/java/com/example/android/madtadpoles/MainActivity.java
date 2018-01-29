@@ -1,12 +1,26 @@
+/*
+Tadpoles variable names changed from KM ("Kijanka miecz") and KT ("Kijanka topór") to KL
+("Kijanka Left") and KR ("Kijanka Rigth") respectively
+*/
+
+
 package com.example.android.madtadpoles;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.media.Image;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.IBinder;
+import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,15 +36,18 @@ import android.content.DialogInterface;
 import android.widget.Toast;
 import android.os.Handler; // Ola's new code
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity implements Dialog.DialogListener{
 
     private boolean isAttackHitted = false;
-    private int i = 0;
+    private boolean isBackBtnPressed = false;
     private int attackValue = 0;
+    public int activePlayer=1;
     private CountDownTimer countDownTimer; // Ola's new code
-
-
+    private MediaPlayer attackSound;
+    Vibrator vibe;
     private final Gun miecz = new Gun(3,R.drawable.ic_miecz);
     private final Gun arc = new Gun(6,R.drawable.ic_arc);
     private final Gun sickle = new Gun(15, R.drawable.ic_sickle);
@@ -38,213 +55,403 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     private final Gun baseball = new Gun(5,R.drawable.ic_baseball);
     private final Gun bomb = new Gun(30,R.drawable.ic_bomb);
     private final Gun bigBomb = new Gun(50,R.drawable.ic_bigbomb);
-    private final Gun[] guns = {miecz, arc, sickle, axe, baseball, bomb, bigBomb};
+    private final Gun recovery = new Gun(0,R.drawable.ic_bigbomb); // TEMPORARY ICON
+    private final Gun[] guns = {miecz, arc, sickle, axe, baseball, bomb, bigBomb, recovery};
+
+    private boolean recovered;
+
+    private boolean mIsBound = false;
+    private BackgroundMusic mServ;
+    private ServiceConnection Scon =new ServiceConnection(){
+
+        public void onServiceConnected(ComponentName name, IBinder
+                binder) {
+            mServ = ((BackgroundMusic.ServiceBinder)binder).getService();
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            mServ = null;
+        }
+    };
+
+    void doBindService(){
+        bindService(new Intent(this,BackgroundMusic.class),
+                Scon, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
+
+    void doUnbindService()
+    {
+        if(mIsBound)
+        {
+            unbindService(Scon);
+            mIsBound = false;
+
+        }
+    }
 
 
     // creating tadpoles
-    private Tadpole KM = new Tadpole(100, 4, 0);
-    private Tadpole KT = new Tadpole(100, 4, 1);
+    public Tadpole KL = new Tadpole(100, 4, 0);
+    public Tadpole KR = new Tadpole(100, 4, 1);
+    public Tadpole[] players = {KL, KR};
+
+    //creating changeroom users
+    public Player leftPlayer = new Player(0, "bob");
+    public Player rightPlayer = new Player(1, "frank");
+
+    //creating changerooms
+    private Changeroom leftChangeroom = new Changeroom(leftPlayer);
+    private Changeroom rightChangeroom = new Changeroom(rightPlayer);
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tadpoles);
+        vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+
 
         // Assign Views corresponding to tadpoles
-        KM.setHealthPoints((TextView) findViewById(R.id.kijankaMieczHP));
-        KM.setAttackButton((ImageButton) findViewById(R.id.KMBtnAttack));
-        KM.setStartCount((Button) findViewById(R.id.startCountKM));
-        KM.setName((TextView) findViewById(R.id.KMName));
-        KM.setLabelCounter((TextView) findViewById(R.id.labelCounterKM));
-        KM.setAttackPoints((TextView) findViewById(R.id.kijankaMieczPts));
-        KM.setProgressBar((ProgressBar) findViewById(R.id.progressA));
-        KM.setHealthPoints((TextView) findViewById(R.id.kijankaMieczHP));
+        KL.setHealthPoints((TextView) findViewById(R.id.kijankaLewaHP));
+        KL.setAttackButton((ImageButton) findViewById(R.id.KLBtnAttack));
+        KL.setStartCount((Button) findViewById(R.id.startCountKL));
+        KL.setName((TextView) findViewById(R.id.KLName));
+        KL.setLabelCounter((TextView) findViewById(R.id.labelCounterKL));
+        KL.setAttackPoints((TextView) findViewById(R.id.kijankaLewaPts));
+        KL.setProgressBar((ProgressBar) findViewById(R.id.progressA));
+        KL.setHealthPoints((TextView) findViewById(R.id.kijankaLewaHP));
+        KL.setAttackSound(R.raw.kinja_01);
+        KL.setSkinView((ImageView) findViewById(R.id.kijankaLewa));
 
-        KT.setHealthPoints((TextView) findViewById(R.id.kijankaTasakHP));
-        KT.setAttackButton((ImageButton) findViewById(R.id.KTBtnAttack));
-        KT.setStartCount((Button) findViewById(R.id.startCountKT));
-        KT.setName((TextView) findViewById(R.id.KTName));
-        KT.setLabelCounter((TextView) findViewById(R.id.labelCounterKT));
-        KT.setAttackPoints((TextView) findViewById(R.id.kijankaTasakPts));
-        KT.setProgressBar((ProgressBar) findViewById(R.id.progressB));
-        KT.setHealthPoints((TextView) findViewById(R.id.kijankaTasakHP));
+        KR.setHealthPoints((TextView) findViewById(R.id.kijankaPrawaHP));
+        KR.setSkinView((ImageView) findViewById(R.id.kijankaPrawa));
+        KR.setAttackButton((ImageButton) findViewById(R.id.KRBtnAttack));
+        KR.setStartCount((Button) findViewById(R.id.startCountKR));
+        KR.setName((TextView) findViewById(R.id.KRName));
+        KR.setLabelCounter((TextView) findViewById(R.id.labelCounterKR));
+        KR.setAttackPoints((TextView) findViewById(R.id.kijankaPrawaPts));
+        KR.setProgressBar((ProgressBar) findViewById(R.id.progressB));
+        KR.setHealthPoints((TextView) findViewById(R.id.kijankaPrawaHP));
+        KR.setAttackSound(R.raw.kinja_02);
 
+        if(!mIsBound) {
+            doBindService();
+            Intent music = new Intent();
+            music.setClass(this, BackgroundMusic.class);
+            startService(music);
+        }
         // ******************************************************
         // ********************************** Damian's code start
         // ******************************************************
 
-        // Left Tadpole: i = 0; Right Tadpole: i = 1;
-        whoseTurn(0);
-        // ************* //
 
-        // After starting activity take previous value of whoseTurn -> winner starts new game
+        // After starting activity take previous winner  and switch player to start new game
         Bundle extras = getIntent().getExtras(); // --> Ola's new code
         if (extras != null){
-            int turn = extras.getInt("whoseTurn");
-            whoseTurn(turn);
-        }
+            activePlayer = extras.getInt("winner");
+
+            if (activePlayer==0){
+                leftPlayer = (Player) extras.getSerializable("ActivePlayer");
+                rightPlayer = (Player) extras.getSerializable("NotActivePlayer");
+                KL.setSkinId(leftPlayer.getWhichSkin());
+                KL.getName().setText(leftPlayer.getPlayerName());
+
+                KR.setSkinId(rightPlayer.getWhichSkin());
+                KR.getName().setText(rightPlayer.getPlayerName());
+            } else if (activePlayer == 1){
+                leftPlayer = (Player) extras.getSerializable("NotActivePlayer");
+                rightPlayer = (Player) extras.getSerializable("ActivePlayer");
+                KL.setSkinId(leftPlayer.getWhichSkin());
+                KL.getName().setText(leftPlayer.getPlayerName());
+
+                KR.setSkinId(rightPlayer.getWhichSkin());
+                KR.getName().setText(rightPlayer.getPlayerName());
+            }
+            switchPlayers();
+        }else switchPlayers();
 
         updateLabels();
-        progressbar(KM);  // --> Ola's new code
-        progressbar(KT);  // --> Ola's new code
+        progressbar(KL);  // --> Ola's new code
+        progressbar(KR);  // --> Ola's new code
 
 
-       // KM Attack button ClickListener
+        // **************************************************
+        // *******************************Cezary's new code
+        // **************************************************
+        // Changeroom on click listener
+        ImageButton changeroomIcon = (ImageButton) findViewById(R.id.changeroom);
+        changeroomIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                Intent openChangeroom = new Intent(MainActivity.this, TadpoleChangeroomActivity.class);
+
+                // set player info
+                leftPlayer = new Player(KL.getId(), KL.getName().getText().toString());
+                leftPlayer.setWhichSkin(KL.getSkinId());
+                rightPlayer = new Player(KR.getId(), KR.getName().getText().toString());
+                rightPlayer.setWhichSkin(KR.getSkinId());
+                //set changerooms info
+                leftChangeroom = new Changeroom(leftPlayer);
+                rightChangeroom = new Changeroom(rightPlayer);
+
+
+                Player activeChangeroomUser = null;
+                Player notActiveChangeroomUser = null;
+                if (activePlayer == 0) {
+                    activeChangeroomUser = leftPlayer;
+                    notActiveChangeroomUser = rightPlayer;
+                }else if (activePlayer == 1){
+                    activeChangeroomUser = rightPlayer;
+                    notActiveChangeroomUser = leftPlayer;
+                }
+
+
+                //TO DO
+                //
+                //
+                //Change startActivity to startActivity for result
+                openChangeroom.putExtra("ActiveUserInfo", activeChangeroomUser);
+                openChangeroom.putExtra("NotActiveUserInfo", notActiveChangeroomUser);
+                startActivityForResult(openChangeroom, 9);
+
+            }
+        });
+
+        // ***************************
+        // **************Cezary's new code end
+        // ***************************
+
+       // KL Attack button ClickListener
         // On attack button click set isAttackHitted = true
-        KM.getAttackButton().setOnClickListener(new View.OnClickListener() {
+        KL.getAttackButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isAttackHitted = true;
             }
         });
 
-        // KT Attack button ClickListener
+        // KR Attack button ClickListener
         // On attack button click set isAttackHitted = true
-        KT.getAttackButton().setOnClickListener(new View.OnClickListener() {
+        KR.getAttackButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isAttackHitted = true;
             }
         });
 
-        //************************ Main counter for KM tadpole (left)
+        //************************ Main counter for KL tadpole (left)
         // On Start button enable Attack button and disable other players buttons
         // Create guns
-        KM.getStartCount().setOnClickListener(new View.OnClickListener(){
+        KL.getStartCount().setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View v){
-                updateLabels();
-                disabledCounterStart(KM, true);
-                disabledBtnAttack(KM, false);
+             activatePlayer(KL);
+            }
+        });
 
-                countDownTimer = new CountDownTimer(4000,100){ // Ola's new code: countDownTimerKM + modifications
-                    @SuppressLint("SetTextI18n")
+        //********************* Main counter for KR tadpole
+        // On Start button enable Attack button and disable other players buttons
+        // Create guns
+        KR.getStartCount().setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View v){
+               activatePlayer(KR);
+            }
+        });
+
+        if (activePlayer==0){
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
+        }else{
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()+1]);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
+        }
+    }
+
+    private int nextPLayer(int player){
+        return(player + 1)%2;
+    }
+
+    private void switchPlayers(){
+
+        disabledCounterStart(players[activePlayer], true);
+        disabledBtnAttack(players[activePlayer], true);
+        activePlayer = nextPLayer(activePlayer);
+        disabledCounterStart(players[activePlayer], false);
+        disabledBtnAttack(players[activePlayer], true);
+        changePlayerColors(activePlayer);
+    }
+
+    private void activatePlayer(final Tadpole tadpole){
+
+
+                updateLabels();
+                disabledCounterStart(tadpole, true);
+                disabledBtnAttack(tadpole, false);
+
+                countDownTimer = new CountDownTimer(tadpole.getMainCounter()*1000,100){
+                    int i =0;
                     @Override
                     // On each counter tick..
                     public void onTick(long millisUntilFinished) {
                         // .. display remaining time
                         int counter = (int)(millisUntilFinished / 1000);
-                        updateLabels(KM, counter);
+                        updateLabels(tadpole, counter);
                         // .. display gun
-                        KM.getAttackButton().setImageResource(guns[i].icon);
+                        tadpole.getAttackButton().setImageResource(guns[i].icon);
                         // Check if Attack button is pressed
                         // If yes, disable it, show chosen gun, update progress bar, reset counter
                         if (isAttackHitted) {
-                            disabledBtnAttack(KM, true);
-                            attackValue = guns[i].damage;
-                            KM.getAttackButton().setImageResource(guns[i].icon);
-                            KT.getHealthPoints().setText("" + KM.attack(KT, guns[i]));
-                            if(KT.getHealth()<=0) {
-                                winner(KM);
+                            disabledBtnAttack(tadpole, true);
+                            tadpole.getAttackButton().setImageResource(guns[i].icon);
+                            // Recovery
+                            if (i == 7){
+                                // Open new activity - Recovery
+                                openRecoveryActivity();
+                            // Attack
+                            }else {
+                                attackValue = guns[i].damage;
+
+                                players[nextPLayer(tadpole.getId())].getHealthPoints().setText(String.valueOf(tadpole.attack(players[nextPLayer(tadpole.getId())], guns[i])));
+                                if (players[nextPLayer(tadpole.getId())].getHealth() <= 0) {
+                                    winner(tadpole);
+                                }
+
+                                afterAttack(tadpole);
                             }
-                            progressbar(KT);
-                            afterAttack(KT);
                         }
                         // .. increment index to show new gun
                         i++;
-                        if ( i > 6)
-                            i = 0;
+                        // Health recovery possible only for tadpole with health < 100
+                        if (tadpole.getHealth() == 100) {
+                            if (i > 6)
+                                i = 0;
+                        } else {
+                            if (i > 7)
+                                i = 0;
+                        }
                     }
                     @Override
                     // Attack not pressed and countdown finished - reset counter
                     public void onFinish() {
-                        afterAttack(KT);
+                        attackValue=0;
+                        afterAttack(tadpole);
 
                     }
                 }.start();
-            }
-        });
-
-        //********************* Main counter for KT tadpole
-        // On Start button enable Attack button and disable other players buttons
-        // Create guns
-        KT.getStartCount().setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick (View v){
-                updateLabels();
-                disabledCounterStart(KT, true);
-                disabledBtnAttack(KT, false);
-
-               countDownTimer = new CountDownTimer(4000,100){ // Ola's code: countDownTimerKT =
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    // On each counter tick..
-                    public void onTick(long millisUntilFinished) {
-                        // .. display remaining time
-                        int counter = (int)(millisUntilFinished/1000);
-                        updateLabels(KT, counter);
-                        // .. display gun
-                        KT.getAttackButton().setImageResource(guns[i].icon);
-                        // Check if Attack button is pressed
-                        // If yes, disable it, show chosen gun, update progress bar, reset counter
-                        if (isAttackHitted){
-                            disabledBtnAttack(KT, true);
-                            attackValue = guns[i].damage;
-                            KT.getAttackButton().setImageResource(guns[i].icon);
-                            KM.getHealthPoints().setText("" + KT.attack(KM, guns[i]));
-                            if(KM.getHealth()<=0){
-                                winner(KT);
-                            }
-                            progressbar(KM);
-                            afterAttack(KM);
-                        }
-                        // .. increment index to show new gun
-                        i++;
-                        if ( i > 6)
-                            i = 0;
-                    }
-                    @Override
-                    public void onFinish() {
-                        // Attack not pressed and countdown finished - reset counter
-                        afterAttack(KM);
-                    }
-                }.start();
-            }
-        });
 
     }
 
 
+    @Override
+    public void onBackPressed() {
+
+        //super.onBackPressed();
+        if(isBackBtnPressed){
+            finish();
+        }else {
+            isBackBtnPressed=true;
+            Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show();
+            
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isBackBtnPressed=false;
+                }
+            }, 2000);
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent music = new Intent();
+        music.setClass(this, BackgroundMusic.class);
+        stopService(music);
+        doUnbindService();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+
+
+        if(mServ!=null)
+        mServ.pauseMusic();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!mIsBound){
+            doBindService();
+            Intent music = new Intent();
+            music.setClass(this, BackgroundMusic.class);
+            startService(music);
+        }else if (mServ!=null){
+            mServ.resumeMusic();
+        }
+
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Intent music = new Intent();
+        music.setClass(this, BackgroundMusic.class);
+        stopService(music);
+        doUnbindService();
+    }
+
     /*
-    * Finish KM countdown - Attack button pressed or countdown is finished
-    * give attacked tadpole as parameter
-    */
-    @SuppressLint("SetTextI18n")
+            * Finish KL countdown - Attack button pressed or countdown is finished
+            * give attacked tadpole as parameter
+            */
+
     private void afterAttack(final Tadpole tadpole ){
         // Reset countdown timer
         cancelTimer();
-       int delay = 0;
+
         // If Attack button was pressed introduce 1s delay and display attack points
         if (isAttackHitted) { // Ola's new code
-            delay = 1000;
-            tadpole.getAttackPoints().setVisibility(View.VISIBLE);
-            tadpole.getAttackPoints().setAlpha(0f); // Damian
-            tadpole.getAttackPoints().animate().alpha(1f).setDuration(300); // Damian
-            tadpole.getAttackPoints().setText("-"+ String.valueOf(attackValue));
-        }
-
-        // Ola's new code ..
-        // Update labels, enable 2nd player Start button, disable this player attack button..
-        // .. change player, reset isAttackHitted
-       new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateLabels();
-                if (tadpole.getId()==0) {
-                    disabledCounterStart(KM, false);
-                    disabledBtnAttack(KM, true);
-                }else {
-                    disabledCounterStart(KT, false);
-                    disabledBtnAttack(KT, true);
+            attackSound = MediaPlayer.create(this, tadpole.getAttackSound());
+            attackSound.start();
+            vibe.vibrate(100);
+            players[nextPLayer(tadpole.getId())].getAttackPoints().setVisibility(View.VISIBLE);
+            players[nextPLayer(tadpole.getId())].getAttackPoints().setAlpha(0f); // Damian
+            players[nextPLayer(tadpole.getId())].getAttackPoints().animate().alpha(1f).setDuration(300); // Damian
+            players[nextPLayer(tadpole.getId())].getAttackPoints().setText("-"+ String.valueOf(attackValue));
+            progressbar(players[nextPLayer(tadpole.getId())]);
+            // Ola's new code ..
+            // Update labels, enable 2nd player Start button, disable this player attack button..
+            // .. change player, reset isAttackHitted
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updateLabels();
+                    attackSound.stop();
+                    attackSound.reset();
+                    attackSound.release();
+                    attackSound = null;
+                    isAttackHitted = false;
+                    players[nextPLayer(tadpole.getId())].getAttackPoints().setVisibility(View.INVISIBLE);
+                    players[nextPLayer(tadpole.getId())].getAttackPoints().setAlpha(0f); // Damian
+                    if(players[nextPLayer(tadpole.getId())].getHealth()>0)
+                        switchPlayers();
                 }
-                whoseTurn(tadpole.getId());
-                isAttackHitted = false;
-                tadpole.getAttackPoints().setVisibility(View.INVISIBLE);
-                tadpole.getAttackPoints().setAlpha(0f); // Damian
-            }
-        }, delay);
-        // .. Ola's new code
-    }
+            }, 1000);
 
+        }else
+        switchPlayers();
+
+
+    }
 
     // Ola's code
     /*
@@ -259,12 +466,12 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
 
 
     /*
-    * Display KM and KT counters value
+    * Display KL and KR counters value
     */
     private void updateLabels(){
 
-        KM.getLabelCounter().setText(String.valueOf(KM.getMainCounter()));
-        KT.getLabelCounter().setText(String.valueOf(KT.getMainCounter()));
+        KL.getLabelCounter().setText(String.valueOf(KL.getMainCounter()));
+        KR.getLabelCounter().setText(String.valueOf(KR.getMainCounter()));
     }
     @SuppressLint("SetTextI18n")
     private void updateLabels(Tadpole tadpole, int counter){
@@ -294,6 +501,92 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
         startActivity(infoActivity);
     }
 
+    /*
+    Start RecoveryActivity
+    */
+    public void openRecoveryActivity(){
+        cancelTimer();
+        Intent recoveryActivity = new Intent (getApplicationContext(), RecoveryActivity.class);
+        recoveryActivity.putExtra("currentPlayerHealth", players[activePlayer].getHealth());
+        recoveryActivity.putExtra("currentPlayerName", players[activePlayer].getName().getText());
+        startActivityForResult(recoveryActivity,1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == 1){
+            if (resultCode == Activity.RESULT_OK){
+                recovered = data.getBooleanExtra("healthRecovered", false);
+                afterRecovery(players[activePlayer]);
+            }
+
+            // Cezarys new code
+        } else if (requestCode == 9){
+            if (resultCode == Activity.RESULT_OK){
+                Player activeUserChanges = (Player) data.getSerializableExtra("ActiveUserChanges");
+                Player notActiveUserChanges = (Player) data.getSerializableExtra("NotActiveUserChanges");
+                if (activePlayer == 0) {
+                    leftPlayer = activeUserChanges;
+                    rightPlayer = notActiveUserChanges;
+                    KL.setSkinId(activeUserChanges.getWhichSkin());
+                    KR.setSkinId(notActiveUserChanges.getWhichSkin());
+                    KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
+                    KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
+                    KL.getName().setText(leftPlayer.getPlayerName());
+                    KR.getName().setText(rightPlayer.getPlayerName());
+                }else if (activePlayer == 1){
+                    rightPlayer = activeUserChanges;
+                    leftPlayer = notActiveUserChanges;
+                    KL.setSkinId(notActiveUserChanges.getWhichSkin());
+                    KR.setSkinId(activeUserChanges.getWhichSkin());
+                    KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId() + 1]);
+                    KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
+                    KL.getName().setText(leftPlayer.getPlayerName());
+                    KR.getName().setText(rightPlayer.getPlayerName());
+                }
+            }
+        } // Cezarys new code end
+    }
+
+    private void afterRecovery(final Tadpole tadpole ){
+        // Reset countdown timer
+        cancelTimer();
+        int delay = 0;
+        // If health recovery is successfully introduce 1s delay and display attack points
+        if (recovered) {
+            delay = 1000;
+            guns[2].damage = -(100 - tadpole.getHealth());
+            attackValue = guns[2].damage;
+            players[activePlayer].getAttackPoints().setVisibility(View.VISIBLE);
+            players[activePlayer].getAttackPoints().setAlpha(0f); // Damian
+            players[activePlayer].getAttackPoints().animate().alpha(1f).setDuration(300); // Damian
+            players[activePlayer].getAttackPoints().setText("+"+ String.valueOf(-attackValue));
+            players[activePlayer].getAttackPoints().setBackgroundResource(R.drawable.ic_bam_green);
+            players[activePlayer].getHealthPoints().setText(String.valueOf(tadpole.attack(players[activePlayer], guns[2])));
+            progressbar(players[activePlayer]);
+            Toast.makeText(getApplicationContext(), players[activePlayer].getName().getText() + getString(R.string.RecoveryOk), Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(getApplicationContext(), players[activePlayer].getName().getText() + getString(R.string.RecoveryNOk), Toast.LENGTH_SHORT).show();
+
+
+        // Update labels, enable 2nd player Start button, disable this player attack button..
+        // .. change player, reset isAttackHitted
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateLabels();
+                isAttackHitted = false;
+                recovered = false;
+                players[activePlayer].getAttackPoints().setVisibility(View.INVISIBLE);
+                players[activePlayer].getAttackPoints().setAlpha(0f); // Damian
+                players[activePlayer].getAttackPoints().setBackgroundResource(R.drawable.ic_bam);
+                switchPlayers();
+            }
+        }, delay);
+        // .. Ola's new code
+
+    }
+
     /**
      * Change player name
      * @param km is 1st (left) player's name
@@ -301,31 +594,15 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
      */
     @Override
     public void applyTexts(String km, String kt) {
-        KM.getName().setText(km);
-        KT.getName().setText(kt);
+        KL.getName().setText(km);
+        KR.getName().setText(kt);
 
-        KM.getName().getText();
+       // KL.getName().getText();
     }
 
+
     /**
-     * Change player
-     * @param i : 0 for 1st (left) player, 1 for 2nd (right) player
-     */
-    private void whoseTurn(int i) {
-        if (KT.getHealth() <= 0 || KM.getHealth() <= 0) {
-            changePlayerColors(3);
-        } else if (i == 0) {
-            changePlayerColors(0);
-            disabledBtnAttack(KM, true);
-            disabledBtnAttack(KT, true);
-        } else if (i == 1) {
-            changePlayerColors(1);
-            disabledBtnAttack(KM, true);
-            disabledBtnAttack(KT, true);
-        }
-    }
-    /**
-     * Enabling/disabling KM Attack button, change icon
+     * Enabling/disabling KL Attack button, change icon
      * @param disabled true false
      */
     private void disabledBtnAttack(Tadpole tadpole, boolean disabled){
@@ -342,7 +619,7 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     }
 
     /**
-     * Enabling/disabling KM Start button, change icon
+     * Enabling/disabling KL Start button, change icon
      * @param disabled true false
      */
     private void disabledCounterStart(Tadpole tadpole, boolean disabled){
@@ -364,6 +641,7 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     // *******************************************************
     // Alert about winner, game restart or finish
     private void winner(final Tadpole tadpole) {
+        changePlayerColors(3);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setCancelable(false);
 
@@ -376,11 +654,31 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
                     public void onClick(DialogInterface arg0, int arg1) {
                         Toast.makeText(MainActivity.this, R.string.newGameToast, Toast.LENGTH_LONG).show();
                         Intent startIntent = new Intent(MainActivity.this, MainActivity.class);  // --> Ola's new code
-                        startIntent.putExtra("whoseTurn", tadpole.getId());
+                        startIntent.putExtra("winner", tadpole.getId());
+                        if (activePlayer==0){
+                            startIntent.putExtra("ActivePlayer", leftPlayer);
+                            startIntent.putExtra("NotActivePlayer", rightPlayer);
+                        } else if (activePlayer == 1){
+                            startIntent.putExtra("ActivePlayer", rightPlayer);
+                            startIntent.putExtra("NotActivePlayer", leftPlayer);
+                        }
                         startActivity(startIntent);
                         finish();
                     }
                 });
+
+        /*if (Build.VERSION.SDK_INT >= 11) {
+            recreate();
+        } else {
+            Intent intent = getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+            overridePendingTransition(0, 0);
+
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        }*/
+
 
         alertDialogBuilder.setNegativeButton(R.string.No, new DialogInterface.OnClickListener() {
             @Override
@@ -426,16 +724,16 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void progressbar(Tadpole tadpole) {
         // Progress bar animation
-        setProgressMax(tadpole.getProgressBar(),100);
+        setProgressMax(tadpole.getProgressBar(),tadpole.getHitPoints());
         setProgressAnimate(tadpole.getProgressBar(),tadpole.getHealth());
         tadpole.getProgressBar().setProgress(tadpole.getHealth());
 
         // Animation color changing
-        if (tadpole.getHealth() >= 60){
+        if (tadpole.getHealth() >= tadpole.getHitPoints()*0.6){
             tadpole.getProgressBar().setProgressTintList(ColorStateList.valueOf(Color.GREEN));
-        } else if (tadpole.getHealth() < 60 && tadpole.getHealth() >= 30) {
+        } else if (tadpole.getHealth() >= tadpole.getHitPoints()*0.3) {
             tadpole.getProgressBar().setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
-        } else if (tadpole.getHealth() < 30){
+        } else {
             tadpole.getProgressBar().setProgressTintList(ColorStateList.valueOf(Color.RED));
         }
     }
@@ -448,60 +746,73 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
     // ********************************** Cezary's code start
     // ******************************************************
 
+//    public void enterChangeroom(){
+//
+//    }
+
+
     /**
      * Display/hide player depending on turn
      * @param parameter 0-3
      */
     private void changePlayerColors(int parameter) {
-        // Left KM player's turn
+        // Left KL player's turn
         if (parameter == 0){
-            // Display left KM player
-            swordTadpoleVisibility(1);
-            // Hide right KT player
-            axeTadpoleVisibility(0);
+            // Display left KL player
+            leftTadpoleVisibility(1);
+            // Hide right KR player
+            rightTadpoleVisibility(0);
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
         }
-        // Right KT player's turn
+        // Right KR player's turn
         else if (parameter == 1){
-            // Hide left KM player
-            swordTadpoleVisibility(0);
-            // Display right KT player
-            axeTadpoleVisibility(1);
+            // Hide left KL player
+            leftTadpoleVisibility(0);
+            // Display right KR player
+            rightTadpoleVisibility(1);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId() + 1]);
         }
         // Display both players
         else if (parameter == 2){
-            // Display left KM player
-            swordTadpoleVisibility(1);
-            // Display right KT player
-            axeTadpoleVisibility(1);
+            // Display left KL player
+            leftTadpoleVisibility(1);
+            // Display right KR player
+            rightTadpoleVisibility(1);
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()]);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()]);
         }
         // Hide both players
         else if (parameter == 3){
-            // Hide left KM player
-            swordTadpoleVisibility(0);
-            // Hide right KT player
-            axeTadpoleVisibility(0);
+            // Hide left KL player
+            leftTadpoleVisibility(0);
+            // Hide right KR player
+            rightTadpoleVisibility(0);
+            KR.getSkinView().setImageResource(rightChangeroom.getWardrobe()[KR.getSkinId()+1]);
+            KL.getSkinView().setImageResource(leftChangeroom.getWardrobe()[KL.getSkinId()+1]);
         }
     }
 
     /**
-     * Left KM player visibility
+     * Left KL player visibility
      * @param value hide = 0, display = 1
      */
-    private void swordTadpoleVisibility(int value) {
+    private void leftTadpoleVisibility(int value) {
 
         ProgressBar progressSword = findViewById(R.id.progressA);     // Progress bar
         View swordBack = findViewById(R.id.swordTadBack);                           // Icon background
-        ImageView swordTadPole = findViewById(R.id.kijankaMiecz);       // Player's icon
-        TextView turnDisplaySword = findViewById(R.id.KMRound);          // Turn display text
-        Button countDownStartSword = findViewById(R.id.startCountKM);      // Start button
-        TextView powerAttackSword = findViewById(R.id.labelCounterKM);   // Countdown value
-        ImageButton btnAttackSword = findViewById(R.id.KMBtnAttack);  // Attack button
-        TextView nameSword = findViewById(R.id.KMName);                  // Player's name
+        ImageView swordTadPole = findViewById(R.id.kijankaLewa);       // Player's icon
+        TextView turnDisplaySword = findViewById(R.id.KLRound);          // Turn display text
+        Button countDownStartSword = findViewById(R.id.startCountKL);      // Start button
+        TextView powerAttackSword = findViewById(R.id.labelCounterKL);   // Countdown value
+        ImageButton btnAttackSword = findViewById(R.id.KLBtnAttack);  // Attack button
+        TextView nameSword = findViewById(R.id.KLName);                  // Player's name
 
-        // Hide left KM player
+        // Hide left KL player
         if (value == 0) {
             // Change player's icon
-            swordTadPole.setImageResource(R.drawable.tadpole_non_active);
+            swordTadPole.setImageResource(R.drawable.left_tadpole_1_non_active);
 
             // Change turnDisplay TextView text, color and font color
             turnDisplaySword.setText(R.string.notYourTurn);
@@ -509,17 +820,17 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             turnDisplaySword.setTextColor(getResources().getColor(R.color.unactive_white_icon));
 
             // Disable Start button, change color and font color
-            countDownStartSword.setEnabled(false);
-            countDownStartSword.setBackgroundResource(R.drawable.my_button_grey);
-            countDownStartSword.setTextColor(getResources().getColor(R.color.unactive_white_icon));
+//            countDownStartSword.setEnabled(false);
+//            countDownStartSword.setBackgroundResource(R.drawable.my_button_grey);
+//            countDownStartSword.setTextColor(getResources().getColor(R.color.unactive_white_icon));
 
             // Change countdown value color
             powerAttackSword.setTextColor(getResources().getColor(R.color.unactive_green));
 
             // Disable Attack button, change color and icon
-            btnAttackSword.setEnabled(false);
-            btnAttackSword.setBackgroundResource(R.drawable.my_button_grey);
-            btnAttackSword.setImageResource(R.drawable.ic_unnactive_miecz);
+//            btnAttackSword.setEnabled(false);
+//            btnAttackSword.setBackgroundResource(R.drawable.my_button_grey);
+//            btnAttackSword.setImageResource(R.drawable.ic_unnactive_miecz);
 
             // Change name color
             nameSword.setTextColor(getResources().getColor(R.color.unactive_white_icon));
@@ -531,10 +842,10 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             // Change progress bar background color
             progressSword.setProgressDrawable(getResources().getDrawable(R.drawable.progress_horizontal_unactive));
         }
-        // Display left KM player
+        // Display left KL player
         else if (value == 1) {
             // Change player's icon
-            swordTadPole.setImageResource(R.drawable.tadpole);
+            swordTadPole.setImageResource(R.drawable.left_tadpole_1);
 
             // Change turnDisplay TextView text, color and font color
             turnDisplaySword.setText(R.string.YourTurn);
@@ -542,17 +853,17 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             turnDisplaySword.setTextColor(getResources().getColor(R.color.creme_text));
 
             // Enable Start button, change color and font color
-            countDownStartSword.setEnabled(true);
-            countDownStartSword.setBackgroundResource(R.drawable.my_button);
-            countDownStartSword.setTextColor(getResources().getColor(R.color.creme_text));
+//            countDownStartSword.setEnabled(true);
+//            countDownStartSword.setBackgroundResource(R.drawable.my_button);
+//            countDownStartSword.setTextColor(getResources().getColor(R.color.creme_text));
 
             // Change countdown value color
             powerAttackSword.setTextColor(getResources().getColor(R.color.creme_text));
 
             // Enable Attack button, change color and icon
-            btnAttackSword.setEnabled(true);
-            btnAttackSword.setBackgroundResource(R.drawable.my_button);
-            btnAttackSword.setImageResource(R.drawable.ic_miecz);
+//            btnAttackSword.setEnabled(true);
+//            btnAttackSword.setBackgroundResource(R.drawable.my_button);
+//            btnAttackSword.setImageResource(R.drawable.ic_miecz);
 
             // Change name color
             nameSword.setTextColor(getResources().getColor(R.color.creme_text));
@@ -565,23 +876,23 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
         }
     }
     /**
-     * Right KT player visibility
+     * Right KR player visibility
      * @param value hide = 0, display = 1
      */
-    private void axeTadpoleVisibility(int value) {
+    private void rightTadpoleVisibility(int value) {
         ProgressBar progressAxe = findViewById(R.id.progressB);    // Progress bar
         View axeBack = findViewById(R.id.axeTadBack);                            // Icon background
-        ImageView axeTadPole = findViewById(R.id.kijankaTasak);      // Player's icon
-        TextView turnDisplayAxe = findViewById(R.id.KTRound);         // Turn display text
-        Button countDownStartAxe = findViewById(R.id.startCountKT);     // Start button
-        TextView powerAttackAxe = findViewById(R.id.labelCounterKT);  // Countdown value
-        ImageButton btnAttackAxe = findViewById(R.id.KTBtnAttack); // Attack button
-        TextView nameAxe = findViewById(R.id.KTName);                 // Player's name
+        ImageView axeTadPole = findViewById(R.id.kijankaPrawa);      // Player's icon
+        TextView turnDisplayAxe = findViewById(R.id.KRRound);         // Turn display text
+        Button countDownStartAxe = findViewById(R.id.startCountKR);     // Start button
+        TextView powerAttackAxe = findViewById(R.id.labelCounterKR);  // Countdown value
+        ImageButton btnAttackAxe = findViewById(R.id.KRBtnAttack); // Attack button
+        TextView nameAxe = findViewById(R.id.KRName);                 // Player's name
 
-        // Hide right KT player
+        // Hide right KR player
         if (value == 0) {
             // Change player's icon
-            axeTadPole.setImageResource(R.drawable.tadpole_2_non_active);
+            axeTadPole.setImageResource(R.drawable.right_tadpole_2_non_active);
 
             // Change turnDisplay TextView text, color and font color
             turnDisplayAxe.setText(R.string.notYourTurn);
@@ -589,17 +900,17 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             turnDisplayAxe.setTextColor(getResources().getColor(R.color.unactive_white_icon));
 
             // Disable Start button, change color and font color
-            countDownStartAxe.setEnabled(false);
-            countDownStartAxe.setBackgroundResource(R.drawable.my_button_grey);
-            countDownStartAxe.setTextColor(getResources().getColor(R.color.unactive_white_icon));
+//            countDownStartAxe.setEnabled(false);
+//            countDownStartAxe.setBackgroundResource(R.drawable.my_button_grey);
+//            countDownStartAxe.setTextColor(getResources().getColor(R.color.unactive_white_icon));
 
             // Change countdown value color
             powerAttackAxe.setTextColor(getResources().getColor(R.color.unactive_green));
 
             // Disable Attack button, change color and icon
-            btnAttackAxe.setEnabled(false);
-            btnAttackAxe.setBackgroundResource(R.drawable.my_button_grey);
-            btnAttackAxe.setImageResource(R.drawable.ic_unnactive_miecz);
+//            btnAttackAxe.setEnabled(false);
+//            btnAttackAxe.setBackgroundResource(R.drawable.my_button_grey);
+//            btnAttackAxe.setImageResource(R.drawable.ic_unnactive_miecz);
 
             // Change name color
             nameAxe.setTextColor(getResources().getColor(R.color.unactive_white_icon));
@@ -612,10 +923,10 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             progressAxe.setProgressDrawable(getResources().getDrawable(R.drawable.progress_horizontal_unactive));
 
         }
-        // Display right KT player
+        // Display right KR player
         else if (value == 1) {
             // Change player's icon
-            axeTadPole.setImageResource(R.drawable.tadpole_2);
+            axeTadPole.setImageResource(R.drawable.right_tadpole_2);
 
             // Change turnDisplay TextView text, color and font color
             turnDisplayAxe.setText(R.string.YourTurn);
@@ -623,17 +934,17 @@ public class MainActivity extends AppCompatActivity implements Dialog.DialogList
             turnDisplayAxe.setTextColor(getResources().getColor(R.color.creme_text));
 
             // Enable Start button, change color and font color
-            countDownStartAxe.setEnabled(true);
-            countDownStartAxe.setBackgroundResource(R.drawable.my_button);
-            countDownStartAxe.setTextColor(getResources().getColor(R.color.creme_text));
+//            countDownStartAxe.setEnabled(true);
+//            countDownStartAxe.setBackgroundResource(R.drawable.my_button);
+//            countDownStartAxe.setTextColor(getResources().getColor(R.color.creme_text));
 
             // Change countdown value color
             powerAttackAxe.setTextColor(getResources().getColor(R.color.creme_text));
 
             // Enable Attack button, change color and icon
-            btnAttackAxe.setEnabled(true);
-            btnAttackAxe.setBackgroundResource(R.drawable.my_button);
-            btnAttackAxe.setImageResource(R.drawable.ic_miecz);
+//            btnAttackAxe.setEnabled(true);
+//            btnAttackAxe.setBackgroundResource(R.drawable.my_button);
+//            btnAttackAxe.setImageResource(R.drawable.ic_miecz);
 
             // Change countdown value color
             nameAxe.setTextColor(getResources().getColor(R.color.creme_text));
